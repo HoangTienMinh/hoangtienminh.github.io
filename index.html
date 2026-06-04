@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>HoangTienMinh404 | Trang Web Cá Nhân Của Hoàng Tiến Minh</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="https://media.dolenglish.vn/PUBLIC/MEDIA/5MiT7vLYayJ9E9Vc5JcAP.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      height: 100vh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 100px;
+      font-size: 3rem;
+      text-shadow: 0 0 10px rgba(255,255,255,0.6);
+    }
+
+    p {
+      margin-top: 15px;
+      font-size: 1.2rem;
+    }
+
+    .contact {
+      margin-top: 40px;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      border-radius: 12px;
+      display: inline-block;
+      line-height: 1.8;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    /* 🌠 Ngôi sao tĩnh lấp lánh */
+    .star {
+      position: absolute;
+      width: 1.25px;
+      height: 1.25px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.5); }
+    }
+
+    /* 💫 Sao băng */
+    .shooting-star {
+      position: absolute;
+      width: 3px;
+      height: 85px;
+      background: linear-gradient(-45deg, white, rgba(255,255,255,0));
+      opacity: 0.8;
+      transform: rotate(45deg);
+      animation: fall 2s linear;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-200px) translateX(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(800px) translateX(-800px) rotate(45deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌌 Chào Mừng Đến Với Website Của Hoàng Tiến Minh</h1>
+  <p>Website Cá Nhân Của Tôi - Nơi Để Chúng Ta Chia Sẻ Và Kết Nối Với Nhau :) 🚀</p>
+
+  <div class="contact">
+    📧 Email: <a href="mailto:hoangtienminh2982011@gmail.com" style="color: #4fc3f7;">hoangtienminh2982011@gmail.com</a><br>
+    📱 Phone: <a href="tel:0915517511" style="color: #4fc3f7;">0915517511</a><br>
+    🌐 Facebook: <a href="https://www.facebook.com/hoanganhtuan1973" target="_blank" style="color: #4fc3f7;">Hoàng Tiến Minh</a><br>
+    📖 Nơi Nói Về Bản Thân: <a href="https://hoangtienminh404.github.io/gioithieubanthan/" style="color: #4fc3f7; font-size: 1.2rem;">Giới Thiệu Bản Thân</a><br>
+  </div>
+
+  <footer>© 2025 HoangTienMinh404. All rights reserved.</footer>
+
+  <script>
+    // 🌟 Tạo nhiều ngôi sao hơn
+    for (let i = 0; i < 500; i++) {
+      const star = document.createElement("div");
+      star.classList.add("star");
+      star.style.top = Math.random() * window.innerHeight + "px";
+      star.style.left = Math.random() * window.innerWidth + "px";
+      star.style.animationDelay = Math.random() * 2 + "s";
+      document.body.appendChild(star);
+    }
+
+    // 💫 Hàm tạo sao băng
+    function createShootingStar() {
+      const star = document.createElement("div");
+      star.classList.add("shooting-star");
+      document.body.appendChild(star);
+
+      star.style.top = Math.random() * window.innerHeight * 0.5 + "px";
+      star.style.left = Math.random() * window.innerWidth + "px";
+
+      setTimeout(() => { star.remove(); }, 2000);
+    }
+
+    // Tạo sao băng liên tục (nhanh hơn)
+    setInterval(createShootingStar, 625);
+  </script>
+</body>
+</html>
