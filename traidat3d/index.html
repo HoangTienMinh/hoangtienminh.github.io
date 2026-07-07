@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô hình 3D Trái Đất - Hoàng Tiến Minh</title>
+    <title>Mô hình 3D Trái Đất</title>
     <style>
         body {
             margin: 0;
@@ -39,8 +39,7 @@
 <body>
 
     <div id="info">
-        <h1>Mô hình 3D Trái Đất Sáng Đều</h1>
-        <p>Giữ chuột trái để xoay | Lăn chuột để phóng to/thu nhỏ</p>
+        <h1>Mô hình 3D Trái Đất - Hoàng Tiến Minh</h1>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -93,7 +92,7 @@
         earth.add(clouds); 
 
         
-        const glowGeometry = new THREE.SphereGeometry(1.095, 64, 64); // Ôm sát hơn một chút để tạo độ mỏng
+        const glowGeometry = new THREE.SphereGeometry(1.06, 64, 64);
         const glowMaterial = new THREE.ShaderMaterial({
             vertexShader: `
                 varying vec3 vNormal;
