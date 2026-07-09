@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Piano 88 Keys</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="https://play-lh.googleusercontent.com/4J3Jch2AxCa4HE0iWzEjknponM7NqcLQ3kuly2IznzANPdSUv5CSTO1FoJlExIwv1LyZa0T5eUuYfs801GtOYC4=w256">
+    <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+            color: #fff;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            color: #ffd752; 
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        
+        .piano-rim {
+            width: 100%;
+            max-width: 1300px;
+            background: linear-gradient(to bottom, #222 0%, #050505 100%);
+            padding: 25px 20px 10px 20px;
+            border-radius: 12px 12px 18px 18px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.9),
+                inset 0 2px 3px rgba(255,255,255,0.1);
+            border: 4px solid #111;
+            border-bottom: 8px solid #000;
+            position: relative;
+        }
+
+        
+        .piano-rim::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            height: 6px;
+            background: #a30000;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .piano-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 4px;
+            background: #000;
+            padding-bottom: 5px;
+        }
+
+        .piano {
+            display: flex;
+            position: relative;
+            width: fit-content;
+            background: #000;
+        }
+
+        
+        .key {
+            position: relative;
+            width: 32px;
+            height: 220px;
+            background: linear-gradient(to bottom, #fff 0%, #fcfcfc 60%, #e8e8e8 100%);
+            border: 1px solid #c0c0c0;
+            border-bottom: 4px solid #d4d4d4;
+            border-radius: 0 0 5px 5px;
+            box-sizing: border-box;
+            cursor: pointer;
+            z-index: 1;
+            transition: background 0.05s, transform 0.05s, box-shadow 0.05s;
+            transform-origin: top;
+        }
+
+        .key::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        
+        .key:active, .key.active {
+            background: linear-gradient(to bottom, #e0e0e0 0%, #f3f3f3 40%, #fff 100%);
+            border-bottom: 1px solid #d4d4d4;
+            box-shadow: 
+                inset 0 10px 20px rgba(0,0,0,0.15),
+                inset 0 2px 5px rgba(0,0,0,0.2);
+            transform: scaleY(0.99) translateY(1px);
+        }
+
+        
+        .key.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #d4af37;
+            box-shadow: 0 2px 10px #d4af37;
+            z-index: 5;
+        }
+
+       
+        .key.black {
+            position: absolute;
+            width: 20px;
+            height: 140px;
+            background: linear-gradient(to bottom, #333 0%, #161616 70%, #000 100%);
+            border: 1px solid #000;
+            border-bottom: 5px solid #222;
+            border-radius: 0 0 4px 4px;
+            z-index: 2;
+            margin-left: -10px;
+            box-shadow: -3px 4px 8px rgba(0,0,0,0.6);
+        }
+
+        .key.black:active, .key.black.active {
+            background: linear-gradient(to bottom, #111 0%, #292929 100%);
+            border-bottom: 1px solid #111;
+            box-shadow: -1px 2px 4px rgba(0,0,0,0.8);
+            transform: scaleY(0.98) translateY(1px);
+        }
+        
+        .key.black.active::before {
+            background: #00adb5;
+            box-shadow: 0 2px 10px #00adb5;
+        }
+
+        .piano-container::-webkit-scrollbar { height: 10px; }
+        .piano-container::-webkit-scrollbar-track { background: #0c0c0c; border-radius: 5px; }
+        .piano-container::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
+        .piano-container::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body>
+
+    <div class="brand">YAMAHA</div>
+    <div class="subtitle">Virtual Grand Piano Simulation</div>
+
+    <div class="piano-rim">
+        <div class="piano-container" id="scroll-box">
+            <div class="piano" id="piano"></div>
+        </div>
+    </div>
+
+    <script>
+        const piano = document.getElementById('piano');
+        const scrollBox = document.getElementById('scroll-box');
+        
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const totalKeys = 88;
+        const startKeyIndex = 9; // A0
+
+        function getFrequency(keyIndex) {
+            return 440 * Math.pow(2, (keyIndex - 57) / 12);
+        }
+
+        function getNoteNameAndOctave(keyIndex) {
+            const noteIndex = keyIndex % 12;
+            const octave = Math.floor(keyIndex / 12);
+            return { name: noteNames[noteIndex], octave, isBlack: noteNames[noteIndex].includes('#') };
+        }
+
+        
+        function playPianoAcoustic(freq) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+            const masterGain = audioCtx.createGain();
+            
+            
+            const filterNode = audioCtx.createBiquadFilter();
+            filterNode.type = "lowpass";
+            filterNode.frequency.setValueAtTime(freq * 5.0, now);
+            filterNode.frequency.exponentialRampToValueAtTime(freq * 1.1, now + 2.5);
+
+            filterNode.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+
+            
+            const createString = (detuneVal, waveType, volume) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = waveType;
+                osc.frequency.setValueAtTime(freq, now); 
+                osc.detune.setValueAtTime(detuneVal, now);
+                gain.gain.setValueAtTime(volume, now);
+                
+                osc.connect(gain);
+                gain.connect(filterNode);
+                
+                osc.start(now);
+                const stringDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
+                osc.stop(now + stringDecay);
+            };
+
+            
+            createString(-2, 'triangle', 0.35); 
+            createString(2, 'triangle', 0.35);  
+            createString(0, 'sine', Math.max(0.15, 0.5 * (1 - freq / 900)));
+            createString(5, 'sawtooth', 0.015); 
+            const resonanceOsc = audioCtx.createOscillator();
+            const resonanceGain = audioCtx.createGain();
+            resonanceOsc.type = 'sine';
+            resonanceOsc.frequency.setValueAtTime(freq * 0.5, now); 
+            resonanceGain.gain.setValueAtTime(0.15, now);
+            resonanceGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1); 
+            resonanceOsc.connect(resonanceGain);
+            resonanceGain.connect(audioCtx.destination);
+            resonanceOsc.start(now);
+            resonanceOsc.stop(now + 0.15);
+            masterGain.gain.setValueAtTime(0.001, now);
+            masterGain.gain.linearRampToValueAtTime(0.85, now + 0.003); 
+            
+            const totalDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
+            masterGain.gain.exponentialRampToValueAtTime(0.001, now + totalDecay);
+        }
+        let whiteKeyCount = 0;
+        const keyElements = {};
+
+        for (let i = startKeyIndex; i < startKeyIndex + totalKeys; i++) {
+            const noteInfo = getNoteNameAndOctave(i);
+            const keyBtn = document.createElement('div');
+            
+            keyBtn.className = 'key';
+            keyBtn.dataset.freq = getFrequency(i);
+            keyElements[i] = keyBtn;
+            if (!noteInfo.isBlack && noteInfo.name === 'C') {
+                keyBtn.setAttribute('style', `--note-label: "${noteInfo.name}${noteInfo.octave}"`);
+                const label = document.createElement('span');
+                label.style.position = 'absolute';
+                label.style.bottom = '8px';
+                label.style.fontSize = '9px';
+                label.style.color = '#999';
+                label.innerText = noteInfo.name + noteInfo.octave;
+                keyBtn.appendChild(label);
+            }
+
+            if (noteInfo.isBlack) {
+                keyBtn.classList.add('black');
+                keyBtn.style.left = `${whiteKeyCount * 32}px`;
+            } else {
+                whiteKeyCount++;
+            }
+            const triggerNote = (e) => {
+                e.preventDefault();
+                playPianoAcoustic(parseFloat(keyBtn.dataset.freq));
+                keyBtn.classList.add('active');
+            };
+            const releaseNote = () => keyBtn.classList.remove('active');
+
+            keyBtn.addEventListener('mousedown', triggerNote);
+            keyBtn.addEventListener('mouseup', releaseNote);
+            keyBtn.addEventListener('mouseleave', releaseNote);
+            
+            keyBtn.addEventListener('touchstart', triggerNote, {passive: false});
+            keyBtn.addEventListener('touchend', releaseNote);
+
+            piano.appendChild(keyBtn);
+        }
+        window.onload = () => {
+            const middleC = keyElements[48];
+            if (middleC) {
+                scrollBox.scrollLeft = middleC.offsetLeft - scrollBox.offsetWidth / 2 + 160;
+            }
+        };
+    </script>
+</body>
+</html>
