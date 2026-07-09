@@ -42,7 +42,7 @@
         const cloudMaterial = new THREE.MeshBasicMaterial({ map: cloudTexture, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending });
         const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
         earth.add(clouds);
-        const glowGeometry = new THREE.SphereGeometry(1.06, 64, 64);
+        const glowGeometry = new THREE.SphereGeometry(1.045, 64, 64);
         const glowMaterial = new THREE.ShaderMaterial({
             vertexShader: `
                 varying vec3 vNormal;
