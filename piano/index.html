@@ -65,18 +65,15 @@
             z-index: 10;
         }
 
+        /* --- ĐÃ TỐI ƯU CHO ĐIỆN THOẠI KHÔNG BỊ KHỰNG --- */
         .piano-container {
             width: 100%;
             overflow-x: auto;
             border-radius: 6px;
             background: #000;
             padding-bottom: 8px;
-            cursor: grab;
-            scroll-behavior: smooth;
-        }
-
-        .piano-container:active {
-            cursor: grabbing;
+            -webkit-overflow-scrolling: touch; /* Bật cuộn gia tốc tự nhiên trên iOS/Android */
+            touch-action: pan-x; /* Ưu tiên cuộn ngang cho điện thoại */
         }
 
         .piano {
@@ -158,31 +155,25 @@
             box-shadow: 0 2px 10px #00adb5;
         }
 
-        /* --- CẢI TIẾN THANH CUỘN (SCROLLBAR) --- */
+        /* --- TÙY CHỈNH THANH CUỘN DỄ BẤM/KÉO --- */
         .piano-container::-webkit-scrollbar { 
-            height: 18px; /* Tăng chiều cao thanh cuộn để dễ giữ và kéo */
+            height: 18px; 
         }
         
         .piano-container::-webkit-scrollbar-track { 
             background: #111; 
             border-radius: 10px;
             margin: 0 10px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
         }
         
         .piano-container::-webkit-scrollbar-thumb { 
             background: linear-gradient(to bottom, #555, #333); 
             border-radius: 10px;
-            border: 2px solid #111; /* Tạo viền nổi bật */
-            cursor: pointer;
+            border: 2px solid #111;
         }
         
         .piano-container::-webkit-scrollbar-thumb:hover { 
-            background: linear-gradient(to bottom, #ffd752, #d4af37); /* Đổi màu vàng khi rê chuột vào */
-        }
-
-        .piano-container::-webkit-scrollbar-thumb:active {
-            background: #ffd752;
+            background: linear-gradient(to bottom, #ffd752, #d4af37); 
         }
     </style>
 </head>
@@ -302,8 +293,7 @@
             }
 
             const triggerNote = (e) => {
-                // Tránh phát nhạc khi người dùng đang giữ chuột để kéo (drag)
-                if (isDragging) return; 
+                if (isScrolling) return; // Không phát tiếng khi đang vuốt cuộn
                 e.preventDefault();
                 playPianoAcoustic(parseFloat(keyBtn.dataset.freq));
                 keyBtn.classList.add('active');
@@ -321,43 +311,51 @@
             piano.appendChild(keyBtn);
         }
 
-        // --- CƠ CHẾ KÉO CHUỘT ĐỂ CUỘN PHÍM (DRAG-TO-SCROLL) ---
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        let isDragging = false;
+        // --- XỬ LÝ VUỐT MƯỢT TRÊN ĐIỆN THOẠI VÀ MÁY TÍNH ---
+        let startX = 0;
+        let scrollLeft = 0;
+        let isScrolling = false;
 
+        scrollBox.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].pageX;
+            scrollLeft = scrollBox.scrollLeft;
+            isScrolling = false;
+        }, { passive: true });
+
+        scrollBox.addEventListener('touchmove', (e) => {
+            const x = e.touches[0].pageX;
+            const walk = startX - x;
+            if (Math.abs(walk) > 10) {
+                isScrolling = true; // Xác định người dùng đang vuốt màn hình
+            }
+        }, { passive: true });
+
+        let isMouseDown = false;
         scrollBox.addEventListener('mousedown', (e) => {
-            // Chỉ kích hoạt nếu nhấp vào khoảng trống hoặc cuộn
-            isDown = true;
-            isDragging = false;
+            isMouseDown = true;
+            isScrolling = false;
             startX = e.pageX - scrollBox.offsetLeft;
             scrollLeft = scrollBox.scrollLeft;
         });
 
-        scrollBox.addEventListener('mouseleave', () => {
-            isDown = false;
-        });
-
-        scrollBox.addEventListener('mouseup', () => {
-            isDown = false;
-            setTimeout(() => { isDragging = false; }, 50);
-        });
+        scrollBox.addEventListener('mouseleave', () => isMouseDown = false);
+        scrollBox.addEventListener('mouseup', () => isMouseDown = false);
 
         scrollBox.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
+            if (!isMouseDown) return;
             const x = e.pageX - scrollBox.offsetLeft;
-            const walk = (x - startX) * 1.5; // Tốc độ kéo
-            if (Math.abs(walk) > 5) {
-                isDragging = true; // Xác định đang kéo cuộn, không đánh đàn
-            }
+            const walk = (x - startX) * 1.5;
+            if (Math.abs(walk) > 5) isScrolling = true;
             scrollBox.scrollLeft = scrollLeft - walk;
         });
 
         window.onload = () => {
             const middleC = keyElements[48];
             if (middleC) {
-                scrollBox.scrollLeft = middleC.offsetLeft - scrollBox.offsetWidth / 2 + 160;
+                scrollBox.scrollTo({
+                    left: middleC.offsetLeft - scrollBox.offsetWidth / 2 + 160,
+                    behavior: 'smooth'
+                });
             }
         };
     </script>
