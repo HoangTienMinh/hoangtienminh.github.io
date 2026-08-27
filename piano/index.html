@@ -39,12 +39,11 @@
             text-transform: uppercase;
         }
 
-        
         .piano-rim {
             width: 100%;
             max-width: 1300px;
             background: linear-gradient(to bottom, #222 0%, #050505 100%);
-            padding: 25px 20px 10px 20px;
+            padding: 25px 20px 15px 20px;
             border-radius: 12px 12px 18px 18px;
             box-shadow: 
                 0 25px 50px rgba(0,0,0,0.9),
@@ -54,7 +53,6 @@
             position: relative;
         }
 
-        
         .piano-rim::before {
             content: '';
             position: absolute;
@@ -70,9 +68,15 @@
         .piano-container {
             width: 100%;
             overflow-x: auto;
-            border-radius: 4px;
+            border-radius: 6px;
             background: #000;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
+            cursor: grab;
+            scroll-behavior: smooth;
+        }
+
+        .piano-container:active {
+            cursor: grabbing;
         }
 
         .piano {
@@ -82,7 +86,6 @@
             background: #000;
         }
 
-        
         .key {
             position: relative;
             width: 32px;
@@ -109,7 +112,6 @@
             font-weight: 600;
         }
 
-        
         .key:active, .key.active {
             background: linear-gradient(to bottom, #e0e0e0 0%, #f3f3f3 40%, #fff 100%);
             border-bottom: 1px solid #d4d4d4;
@@ -119,7 +121,6 @@
             transform: scaleY(0.99) translateY(1px);
         }
 
-        
         .key.active::before {
             content: '';
             position: absolute;
@@ -132,7 +133,6 @@
             z-index: 5;
         }
 
-       
         .key.black {
             position: absolute;
             width: 20px;
@@ -158,10 +158,32 @@
             box-shadow: 0 2px 10px #00adb5;
         }
 
-        .piano-container::-webkit-scrollbar { height: 10px; }
-        .piano-container::-webkit-scrollbar-track { background: #0c0c0c; border-radius: 5px; }
-        .piano-container::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; }
-        .piano-container::-webkit-scrollbar-thumb:hover { background: #444; }
+        /* --- CẢI TIẾN THANH CUỘN (SCROLLBAR) --- */
+        .piano-container::-webkit-scrollbar { 
+            height: 18px; /* Tăng chiều cao thanh cuộn để dễ giữ và kéo */
+        }
+        
+        .piano-container::-webkit-scrollbar-track { 
+            background: #111; 
+            border-radius: 10px;
+            margin: 0 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        }
+        
+        .piano-container::-webkit-scrollbar-thumb { 
+            background: linear-gradient(to bottom, #555, #333); 
+            border-radius: 10px;
+            border: 2px solid #111; /* Tạo viền nổi bật */
+            cursor: pointer;
+        }
+        
+        .piano-container::-webkit-scrollbar-thumb:hover { 
+            background: linear-gradient(to bottom, #ffd752, #d4af37); /* Đổi màu vàng khi rê chuột vào */
+        }
+
+        .piano-container::-webkit-scrollbar-thumb:active {
+            background: #ffd752;
+        }
     </style>
 </head>
 <body>
@@ -196,13 +218,11 @@
             return { name: noteNames[noteIndex], octave, isBlack: noteNames[noteIndex].includes('#') };
         }
 
-        
         function playPianoAcoustic(freq) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const now = audioCtx.currentTime;
             const masterGain = audioCtx.createGain();
-            
             
             const filterNode = audioCtx.createBiquadFilter();
             filterNode.type = "lowpass";
@@ -212,7 +232,6 @@
             filterNode.connect(masterGain);
             masterGain.connect(audioCtx.destination);
 
-            
             const createString = (detuneVal, waveType, volume) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
@@ -230,11 +249,11 @@
                 osc.stop(now + stringDecay);
             };
 
-            
             createString(-2, 'triangle', 0.35); 
             createString(2, 'triangle', 0.35);  
             createString(0, 'sine', Math.max(0.15, 0.5 * (1 - freq / 900)));
             createString(5, 'sawtooth', 0.015); 
+            
             const resonanceOsc = audioCtx.createOscillator();
             const resonanceGain = audioCtx.createGain();
             resonanceOsc.type = 'sine';
@@ -245,12 +264,14 @@
             resonanceGain.connect(audioCtx.destination);
             resonanceOsc.start(now);
             resonanceOsc.stop(now + 0.15);
+            
             masterGain.gain.setValueAtTime(0.001, now);
             masterGain.gain.linearRampToValueAtTime(0.85, now + 0.003); 
             
             const totalDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
             masterGain.gain.exponentialRampToValueAtTime(0.001, now + totalDecay);
         }
+
         let whiteKeyCount = 0;
         const keyElements = {};
 
@@ -261,6 +282,7 @@
             keyBtn.className = 'key';
             keyBtn.dataset.freq = getFrequency(i);
             keyElements[i] = keyBtn;
+
             if (!noteInfo.isBlack && noteInfo.name === 'C') {
                 keyBtn.setAttribute('style', `--note-label: "${noteInfo.name}${noteInfo.octave}"`);
                 const label = document.createElement('span');
@@ -278,11 +300,15 @@
             } else {
                 whiteKeyCount++;
             }
+
             const triggerNote = (e) => {
+                // Tránh phát nhạc khi người dùng đang giữ chuột để kéo (drag)
+                if (isDragging) return; 
                 e.preventDefault();
                 playPianoAcoustic(parseFloat(keyBtn.dataset.freq));
                 keyBtn.classList.add('active');
             };
+
             const releaseNote = () => keyBtn.classList.remove('active');
 
             keyBtn.addEventListener('mousedown', triggerNote);
@@ -294,6 +320,40 @@
 
             piano.appendChild(keyBtn);
         }
+
+        // --- CƠ CHẾ KÉO CHUỘT ĐỂ CUỘN PHÍM (DRAG-TO-SCROLL) ---
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let isDragging = false;
+
+        scrollBox.addEventListener('mousedown', (e) => {
+            // Chỉ kích hoạt nếu nhấp vào khoảng trống hoặc cuộn
+            isDown = true;
+            isDragging = false;
+            startX = e.pageX - scrollBox.offsetLeft;
+            scrollLeft = scrollBox.scrollLeft;
+        });
+
+        scrollBox.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+
+        scrollBox.addEventListener('mouseup', () => {
+            isDown = false;
+            setTimeout(() => { isDragging = false; }, 50);
+        });
+
+        scrollBox.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            const x = e.pageX - scrollBox.offsetLeft;
+            const walk = (x - startX) * 1.5; // Tốc độ kéo
+            if (Math.abs(walk) > 5) {
+                isDragging = true; // Xác định đang kéo cuộn, không đánh đàn
+            }
+            scrollBox.scrollLeft = scrollLeft - walk;
+        });
+
         window.onload = () => {
             const middleC = keyElements[48];
             if (middleC) {
