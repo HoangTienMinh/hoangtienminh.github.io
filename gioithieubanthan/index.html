@@ -67,6 +67,12 @@
       background: rgba(30, 41, 59, 0.85);
     }
 
+    .ctrl-btn.playing {
+      border-color: rgba(56, 239, 125, 0.65);
+      color: #6ee7b7;
+      box-shadow: 0 0 12px rgba(56, 239, 125, 0.22);
+    }
+
     .container {
       position: relative;
       z-index: 1;
@@ -283,7 +289,13 @@
 </head>
 <body>
   <canvas id="sky-canvas"></canvas>
+
   <audio id="bg-music" src="vetmua.mp3" autoplay loop preload="auto"></audio>
+
+  <div class="top-controls">
+    <button type="button" class="ctrl-btn" id="music-btn">🎵 Bật nhạc</button>
+  </div>
+
   <main class="container">
     <header class="hero">
       <div class="status-pill">
@@ -330,12 +342,30 @@ Tôi là một học sinh của trường THCS Mỹ Xá của tỉnh Nam Định
 
   <script>
     const bgMusic = document.getElementById("bg-music");
+    const musicBtn = document.getElementById("music-btn");
+    let userPaused = false;
+
+    function syncMusicBtn() {
+      if (!bgMusic.paused) {
+        musicBtn.textContent = "⏸️ Tắt nhạc";
+        musicBtn.classList.add("playing");
+      } else {
+        musicBtn.textContent = "🎵 Bật nhạc";
+        musicBtn.classList.remove("playing");
+      }
+    }
 
     function tryAutoplayMusic() {
-      if (!bgMusic) return;
-      bgMusic.play().catch(() => {
+      if (!bgMusic || userPaused) return;
+      bgMusic.play().then(() => {
+        syncMusicBtn();
+      }).catch(() => {
+        syncMusicBtn();
         const unlockOnce = () => {
-          bgMusic.play().catch(() => {});
+          if (userPaused) return;
+          bgMusic.play().then(() => {
+            syncMusicBtn();
+          }).catch(() => {});
           document.removeEventListener("click", unlockOnce);
           document.removeEventListener("touchstart", unlockOnce);
           document.removeEventListener("keydown", unlockOnce);
@@ -345,6 +375,24 @@ Tôi là một học sinh của trường THCS Mỹ Xá của tỉnh Nam Định
         document.addEventListener("keydown", unlockOnce, { once: true });
       });
     }
+
+    musicBtn.addEventListener("click", () => {
+      if (bgMusic.paused) {
+        userPaused = false;
+        bgMusic.play().then(() => {
+          syncMusicBtn();
+        }).catch(() => {
+          syncMusicBtn();
+        });
+      } else {
+        userPaused = true;
+        bgMusic.pause();
+        syncMusicBtn();
+      }
+    });
+
+    bgMusic.addEventListener("play", syncMusicBtn);
+    bgMusic.addEventListener("pause", syncMusicBtn);
 
     window.addEventListener("DOMContentLoaded", tryAutoplayMusic);
     tryAutoplayMusic();
@@ -415,11 +463,6 @@ Tôi là một học sinh của trường THCS Mỹ Xá của tỉnh Nam Định
         decay: Math.random() * 0.008 + 0.022
       });
     }
-
-    document.getElementById("wish-btn").addEventListener("click", () => {
-      spawnShootingStar();
-      setTimeout(spawnShootingStar, 220);
-    });
 
     window.addEventListener("mousemove", (e) => {
       targetX = (e.clientX - width / 2) * 0.018;
