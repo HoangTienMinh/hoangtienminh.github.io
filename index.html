@@ -43,19 +43,28 @@
       right: 16px;
       z-index: 5;
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .top-controls-row {
+      display: flex;
       gap: 8px;
     }
 
     .ctrl-btn {
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.72);
       border: 1px solid rgba(255, 255, 255, 0.14);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: #cbd5e1;
       font-family: inherit;
       font-size: 0.8rem;
       padding: 7px 12px;
       border-radius: 999px;
       cursor: pointer;
+      white-space: nowrap;
       transition: all 0.2s ease;
     }
 
@@ -87,20 +96,13 @@
       animation: fadeUp 0.7s ease both;
     }
 
-    /* --- VÒNG TRÒN QUANG PHỔ XOAY QUANH AVATAR (ĐÃ TĂNG KÍCH THƯỚC) --- */
+    /* --- VÒNG TRÒN QUANG PHỔ XOAY QUANH AVATAR --- */
     .avatar-container {
       position: relative;
       width: 248px;
       height: 248px;
       margin-bottom: 24px;
       transition: transform 0.3s ease;
-    }
-
-    @media (max-width: 480px) {
-      .avatar-container {
-        width: 204px;
-        height: 204px;
-      }
     }
 
     .avatar-container:hover {
@@ -184,18 +186,26 @@
     }
 
     .hero-heading {
-      display: inline-flex;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      font-size: clamp(1.8rem, 4.2vw, 2.85rem);
+      gap: 4px;
+      font-size: clamp(1.75rem, 4.2vw, 2.85rem);
       font-weight: 700;
       line-height: 1.25;
     }
 
+    .heading-line {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .galaxy-emoji {
-      font-size: 0.95em;
+      font-size: 0.9em;
       line-height: 1;
     }
 
@@ -232,7 +242,7 @@
     /* Hiệu ứng chuyển động cho toàn bộ dòng mô tả */
     .subtitle {
       margin-top: 14px;
-      font-size: clamp(0.98rem, 2vw, 1.12rem);
+      font-size: clamp(0.96rem, 2vw, 1.12rem);
       font-weight: 500;
       max-width: 720px;
       line-height: 1.6;
@@ -331,7 +341,6 @@
       flex-wrap: wrap;
     }
 
-    /* Hiển thị đầy đủ nội dung nhãn, không cắt thành ... */
     .card-label {
       font-size: 0.83rem;
       color: #94a3b8;
@@ -356,13 +365,12 @@
       border-color: rgba(251, 113, 133, 0.28);
     }
 
-    /* Hiển thị đầy đủ giá trị */
     .card-value {
       font-size: 0.98rem;
       font-weight: 600;
       color: #e0f2fe;
       line-height: 1.35;
-      word-break: break-word;
+      overflow-wrap: anywhere;
       margin-top: 4px;
       transition: filter 0.25s ease;
     }
@@ -446,16 +454,99 @@
       from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* --- TỐI ƯU RIÊNG CHO MÀN HÌNH ĐIỆN THOẠI --- */
+    @media (max-width: 600px) {
+      body {
+        padding: 54px 16px 60px;
+        background:
+          linear-gradient(155deg, transparent 10%, rgba(56, 189, 248, 0.14) 38%, rgba(139, 92, 246, 0.16) 62%, transparent 90%),
+          radial-gradient(circle at 15% 18%, rgba(56, 189, 248, 0.24), transparent 46%),
+          radial-gradient(circle at 85% 24%, rgba(168, 85, 247, 0.24), transparent 48%),
+          radial-gradient(circle at 50% 62%, rgba(129, 140, 248, 0.14), transparent 55%),
+          radial-gradient(ellipse at bottom, #162236 0%, #06080d 100%);
+      }
+
+      .top-controls {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .top-controls-row {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+      }
+
+      .ctrl-btn {
+        font-size: 0.74rem;
+        padding: 6px 10px;
+      }
+
+      .hero {
+        margin-bottom: 28px;
+      }
+
+      .avatar-container {
+        width: 196px;
+        height: 196px;
+        margin-bottom: 20px;
+      }
+
+      .status-pill {
+        font-size: 0.78rem;
+        padding: 5px 12px;
+      }
+
+      .hero-heading {
+        font-size: 1.52rem;
+        gap: 2px;
+      }
+
+      .subtitle {
+        font-size: 0.92rem;
+        margin-top: 10px;
+        padding: 0 4px;
+      }
+
+      .section-title {
+        font-size: 0.78rem;
+        margin: 22px 0 12px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 11px;
+      }
+
+      .card {
+        padding: 13px 15px;
+        border-radius: 14px;
+      }
+
+      .card-value {
+        font-size: 0.9rem;
+        word-break: break-all;
+      }
+    }
   </style>
 </head>
 <body>
   <canvas id="sky-canvas"></canvas>
 
-  <audio id="bg-music" src="denkhinao.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" src="denkhinao.mp3" preload="auto"></audio>
 
   <div class="top-controls">
     <button type="button" class="ctrl-btn" id="wish-btn">🌠 Gọi sao băng</button>
-    <button type="button" class="ctrl-btn" id="music-btn">🎵 Bật nhạc</button>
+    <div class="top-controls-row">
+      <button type="button" class="ctrl-btn" id="music-btn">🎵 Bật nhạc</button>
+      <button type="button" class="ctrl-btn" id="switch-music-btn">🔀 Đổi nhạc</button>
+    </div>
   </div>
 
   <main class="container">
@@ -464,8 +555,10 @@
         <img class="avatar" src="https://cdn.upanhlaylink.com/i/h7cPGmXJ.png" alt="Hoàng Tiến Minh">
       </div>
       <div class="hero-heading">
-        <span class="galaxy-emoji" aria-hidden="true">🌌</span>
-        <h1 class="spectral-title">Chào Mừng Đến Với Website Của</h1><br>
+        <div class="heading-line">
+          <span class="galaxy-emoji" aria-hidden="true">🌌</span>
+          <h1 class="spectral-title">Chào Mừng Đến Với Website Của</h1>
+        </div>
         <h1 class="spectral-title">Hoàng Tiến Minh</h1>
       </div>
       <p class="subtitle">Website Cá Nhân Của Tôi - Nơi Để Chúng Ta Chia Sẻ Và Kết Nối Với Nhau :)</p>
@@ -612,22 +705,75 @@
       });
     });
 
-    // Điều khiển nhạc nền denkhinao.mp3
+    // Điều khiển nhạc nền & phát ngẫu nhiên 4 bài hát
     const bgMusic = document.getElementById("bg-music");
     const musicBtn = document.getElementById("music-btn");
+    const switchMusicBtn = document.getElementById("switch-music-btn");
+
+    const randomPlaylist = [
+      "emthuacota.mp3",
+      "trachoanh.mp3",
+      "tungyeu.mp3",
+      "songaymaiemdimat.mp3"
+    ];
+    let currentTrack = "";
+
+    function syncPlayState() {
+      if (!bgMusic.paused) {
+        musicBtn.textContent = "⏸️ Tắt nhạc";
+        musicBtn.classList.add("playing");
+      } else {
+        musicBtn.textContent = "🎵 Bật nhạc";
+        musicBtn.classList.remove("playing");
+      }
+    }
+
+    function pickRandomTrack() {
+      const candidates = randomPlaylist.filter(track => track !== currentTrack);
+      const pool = candidates.length > 0 ? candidates : randomPlaylist;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function playTrack(fileName) {
+      currentTrack = fileName;
+      bgMusic.src = fileName;
+      bgMusic.play().then(() => {
+        syncPlayState();
+        showToast(`Đang phát: ${fileName}`);
+      }).catch(() => {
+        syncPlayState();
+        showToast(`Không thể phát tệp ${fileName}!`);
+      });
+    }
 
     musicBtn.addEventListener("click", () => {
       if (bgMusic.paused) {
+        if (!bgMusic.dataset.started) {
+          bgMusic.dataset.started = "1";
+          playTrack(pickRandomTrack());
+          return;
+        }
         bgMusic.play().then(() => {
-          musicBtn.textContent = "⏸️ Tắt nhạc";
-          musicBtn.classList.add("playing");
+          syncPlayState();
         }).catch(() => {
-          showToast("Không thể phát tệp denkhinao.mp3!");
+          showToast(`Không thể phát tệp ${currentTrack || "denkhinao.mp3"}!`);
         });
       } else {
         bgMusic.pause();
-        musicBtn.textContent = "🎵 Bật nhạc";
-        musicBtn.classList.remove("playing");
+        syncPlayState();
+      }
+    });
+    switchMusicBtn.addEventListener("click", () => {
+      const nextTrack = pickRandomTrack();
+      playTrack(nextTrack);
+    });
+
+    bgMusic.addEventListener("ended", () => {
+      if (currentTrack) {
+        playTrack(pickRandomTrack());
+      } else {
+        bgMusic.currentTime = 0;
+        bgMusic.play().catch(() => {});
       }
     });
 
@@ -706,6 +852,8 @@
       mouseX += (targetX - mouseX) * 0.04;
       mouseY += (targetY - mouseY) * 0.04;
 
+      const isMobile = width <= 600;
+
       for (const s of stars) {
         s.alpha += s.delta;
         if (s.alpha <= s.minAlpha || s.alpha >= s.maxAlpha) {
@@ -719,6 +867,17 @@
         ctx.arc(drawX, drawY, s.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${s.color}, ${s.alpha.toFixed(3)})`;
         ctx.fill();
+
+        // Quầng sáng xanh - tím nhẹ cho một số ngôi sao trên màn hình điện thoại
+        if (isMobile && s.r > 0.85) {
+          const glowColor = s.color === "210, 232, 255"
+            ? `rgba(56, 189, 248, ${(s.alpha * 0.22).toFixed(3)})`
+            : `rgba(168, 85, 247, ${(s.alpha * 0.18).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, s.r * 3.4, 0, Math.PI * 2);
+          ctx.fillStyle = glowColor;
+          ctx.fill();
+        }
       }
 
       for (let i = shootingStars.length - 1; i >= 0; i--) {
@@ -736,7 +895,8 @@
         const tailY = st.y - (st.vy / st.speed) * st.len;
         const grad = ctx.createLinearGradient(st.x, st.y, tailX, tailY);
         grad.addColorStop(0, `rgba(255, 255, 255, ${st.life.toFixed(2)})`);
-        grad.addColorStop(0.3, `rgba(186, 230, 253, ${(st.life * 0.6).toFixed(2)})`);
+        grad.addColorStop(0.3, isMobile ? `rgba(125, 211, 252, ${(st.life * 0.72).toFixed(2)})` : `rgba(186, 230, 253, ${(st.life * 0.6).toFixed(2)})`);
+        grad.addColorStop(0.65, isMobile ? `rgba(192, 132, 252, ${(st.life * 0.35).toFixed(2)})` : `rgba(186, 230, 253, 0)`);
         grad.addColorStop(1, "rgba(255, 255, 255, 0)");
 
         ctx.beginPath();
