@@ -2,150 +2,504 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Giới Thiệu Về Tôi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giới Thiệu Về Tôi | HoangTienMinh</title>
   <link rel="icon" type="image/png" sizes="32x32" href="https://png.pngtree.com/background/20250207/original/pngtree-a-couple-sits-on-a-blanket-gazing-at-starry-night-sky-picture-image_16259707.jpg">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      min-height: 100%;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       min-height: 100vh;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      color: #fff;
-      font-family: Arial, sans-serif;
-      line-height: 1.8;
-      padding: 40px;
-      text-align: justify;
-      position: relative;
       overflow-x: hidden;
+      font-family: 'Be Vietnam Pro', Arial, sans-serif;
+      color: #f4f7fb;
+      background:
+        linear-gradient(125deg, transparent 20%, rgba(56, 189, 248, 0.06) 45%, rgba(139, 92, 246, 0.07) 55%, transparent 80%),
+        radial-gradient(circle at 18% 22%, rgba(56, 189, 248, 0.12), transparent 38%),
+        radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.12), transparent 42%),
+        radial-gradient(ellipse at bottom, #131d2b 0%, #06080d 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 20px 68px;
     }
 
-    h1 {
-      font-size: 2.5rem;
+    #sky-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .top-controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      border-color: rgba(125, 211, 252, 0.55);
+      color: #ffffff;
+      background: rgba(30, 41, 59, 0.85);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 880px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      margin-bottom: 30px;
-      color: #4fc3f7;
-      text-shadow: 0 0 10px #4fc3f7;
+      margin-bottom: 28px;
     }
 
-    p {
-      font-size: 1.1rem;
-      max-width: 900px;
-      margin: 0 auto 20px auto;
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38ef7d;
+      box-shadow: 0 0 8px #38ef7d;
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .spectral-title {
+      font-size: clamp(1.8rem, 4.2vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.25;
+      background: linear-gradient(90deg, #ff6b9d, #00ffff, #e879f9, #38ef7d, #ff6b9d);
+      background-size: 350% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: spectralShift 15s linear infinite;
+      filter: drop-shadow(0 0 14px rgba(0, 255, 255, 0.15));
+    }
+
+    .spectral-highlight {
+      font-weight: 700;
+      background: linear-gradient(90deg, #7dd3fc, #f0abfc, #6ee7b7, #7dd3fc);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: spectralShift 14s linear infinite;
+    }
+
+    @keyframes spectralShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass-box {
+      --mx: 50%;
+      --my: 50%;
+      position: relative;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 24px 26px;
+      margin-bottom: 18px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .glass-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(320px circle at var(--mx) var(--my), rgba(125, 211, 252, 0.12), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .glass-box:hover::before {
+      opacity: 1;
+    }
+
+    .glass-box:hover {
+      border-color: rgba(125, 211, 252, 0.36);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .intro-box {
+      text-align: center;
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      font-weight: 500;
+      padding: 18px 22px;
+    }
+
+    .story-text {
+      position: relative;
+      z-index: 1;
+      font-size: 1rem;
+      line-height: 1.85;
+      color: #e2e8f0;
+      text-align: justify;
       white-space: pre-line;
     }
 
-    b {
-      color: #00ff37;
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #94a3b8;
+      margin: 26px 0 12px;
     }
 
-    /* Intro */
-    .intro {
+    .teacher-list {
+      position: relative;
+      z-index: 1;
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .teacher-item {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 0.96rem;
+      line-height: 1.75;
+      color: #e2e8f0;
+      text-align: justify;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .teacher-item:hover {
+      border-color: rgba(125, 211, 252, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .name-highlight {
+      color: #38ef7d;
+      font-weight: 600;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 12px;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      font-size: 0.88rem;
+      color: #94a3b8;
       text-align: center;
-      margin-bottom: 40px;
-      font-size: 1.3rem;
     }
 
-    /* Sao */
-    .star {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: twinkle 2s infinite alternate;
-      pointer-events: none;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes twinkle {
-      from { opacity: 0.3; }
-      to { opacity: 1; }
-    }
-
-    /* Sao băng */
-    .shooting-star {
-      position: absolute;
-      width: 3px;
-      height: 80px;
-      background: linear-gradient(white, transparent);
-      opacity: 0.8;
-      transform: rotate(45deg);
-      animation: shoot 3s linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes shoot {
-      0% {
-        transform: translateX(0) translateY(0) rotate(45deg);
-        opacity: 1;
+    @media (max-width: 600px) {
+      body {
+        padding: 54px 16px 64px;
+        background:
+          linear-gradient(155deg, transparent 10%, rgba(56, 189, 248, 0.14) 38%, rgba(139, 92, 246, 0.16) 62%, transparent 90%),
+          radial-gradient(circle at 15% 18%, rgba(56, 189, 248, 0.24), transparent 46%),
+          radial-gradient(circle at 85% 24%, rgba(168, 85, 247, 0.24), transparent 48%),
+          radial-gradient(circle at 50% 62%, rgba(129, 140, 248, 0.14), transparent 55%),
+          radial-gradient(ellipse at bottom, #162236 0%, #06080d 100%);
       }
-      100% {
-        transform: translateX(-800px) translateY(800px) rotate(45deg);
-        opacity: 0;
+
+      .top-controls {
+        top: 12px;
+        right: 12px;
+      }
+
+      .ctrl-btn {
+        font-size: 0.74rem;
+        padding: 6px 10px;
+      }
+
+      .glass-box {
+        padding: 18px 16px;
+        border-radius: 15px;
+      }
+
+      .story-text,
+      .teacher-item {
+        font-size: 0.92rem;
+        line-height: 1.75;
+        text-align: left;
       }
     }
   </style>
 </head>
-
 <body>
-  <h1>🌟 Giới Thiệu Về Tôi 🌟</h1>
+  <canvas id="sky-canvas"></canvas>
+  <audio id="bg-music" src="vetmua.mp3" autoplay loop preload="auto"></audio>
+  <main class="container">
+    <header class="hero">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span class="spectral-highlight">Những Cậu Chuyện Về Tôi - Hoàng Tiến Minh</span>
+      </div>
+      <h1 class="spectral-title">🌟 Giới Thiệu Về Tôi 🌟</h1>
+    </header>
 
-  <div class="intro">
-    <p>Xin chào, tôi là <b>Hoàng Tiến Minh</b> và tôi lấy biệt danh là <b>HoangTienMinh</b>.</p>
-  </div>
+    <section class="glass-box intro-box">
+      <p>Xin chào, tôi là <span class="name-highlight">Hoàng Tiến Minh</span> và tôi lấy biệt danh là <span class="name-highlight">HoangTienMinh</span>.</p>
+    </section>
 
-  <p>
-Tôi sinh ngày 29 tháng 8 năm 2011, và lúc tôi code nên web này là 22 tháng 8, vậy chỉ còn 7 ngày nữa là đến sinh nhật tôi.  
+    <section class="glass-box">
+      <p class="story-text">Tôi sinh ngày 29 tháng 8 năm 2011, và lúc tôi code nên web này là 22 tháng 8 năm 2025, vậy chỉ còn 7 ngày nữa là đến sinh nhật tôi.
 
-Tôi cũng chỉ là một học sinh bình thường mà thôi, nhưng niềm đam mê của tôi không giống như những đám bạn cùng trang lứa khác, niềm đam mê của đám bạn có thể là thể thao, game và những thứ khác. Nhưng tôi thì khác, niềm đam mê của tôi chỉ đơn giản là gắn bó với máy tính :) và công nghệ thông tin cùng với những thế giới trên internet và những dòng code trên máy tính, tôi cũng có sở thích mày mò và tìm hiểu những thứ mới lạ trên mạng, nhưng thứ tôi tìm hiểu không phải là những video "giết người" hay những video "đổi trụy" mà đám bạn tôi hay tìm ra và gửi lên nhóm lớp :), mà thứ tôi tìm hiểu lại là những dòng code và các kỹ thuật hack khác nhau.  
+Tôi cũng chỉ là một học sinh bình thường mà thôi, nhưng niềm đam mê của tôi không giống như những đám bạn cùng trang lứa khác, niềm đam mê của đám bạn có thể là thể thao, game và những thứ khác. Nhưng tôi thì khác, niềm đam mê của tôi chỉ đơn giản là gắn bó với máy tính :) và công nghệ thông tin cùng với những thế giới trên internet và những dòng code trên máy tính, tôi cũng có sở thích mày mò và tìm hiểu những thứ mới lạ trên mạng, nhưng thứ tôi tìm hiểu không phải là những video "giết người" hay những video "đổi trụy" mà đám bạn tôi hay tìm ra và gửi lên nhóm lớp :), mà thứ tôi tìm hiểu lại là những dòng code và các kỹ thuật hack khác nhau.
 
-Tôi đã biết tạo web, nhưng khi tôi đưa web chính chủ của nhà trường tôi đang học cho mấy đứa bạn tôi thì chúng nó lại không dám vào vì sợ tôi làm gì đó như hack cam và những thứ khác :). Tôi còn có một niềm đam mê cũng lớn không kém, đó chính là niềm đam mê thiên văn học, những ngôi sao và vì tinh tú trên bầu trời :). Tôi học giỏi nhất môn toán và học ngu nhất môn tiếng anh, nhưng không hiểu sao khi giao tiếp với người nước ngoài trên dark web tôi lại nói tiếng anh như đúng rồi :), không hiểu tại sao nữa :v nhưng có thể sở thích của tôi đặt đúng chỗ có thể phát huy được những tiềm năng ẩn.  
+Tôi đã biết tạo web, nhưng khi tôi đưa web chính chủ của nhà trường tôi đang học cho mấy đứa bạn tôi thì chúng nó lại không dám vào vì sợ tôi làm gì đó như hack cam và những thứ khác :). Tôi còn có một niềm đam mê cũng lớn không kém, đó chính là niềm đam mê thiên văn học, những ngôi sao và vì tinh tú trên bầu trời :). Tôi học giỏi nhất môn toán và học ngu nhất môn tiếng anh, nhưng không hiểu sao khi giao tiếp với người nước ngoài trên dark web tôi lại nói tiếng anh như đúng rồi :), không hiểu tại sao nữa :v nhưng có thể sở thích của tôi đặt đúng chỗ có thể phát huy được những tiềm năng ẩn.
 
-Tôi là một học sinh của trường THCS Mỹ Xá của tỉnh Nam Định cũ và sau đây là những giáo viên tôi đã từng học và tôi sẽ chia sẻ những trải nghiệm tôi có sau 3 năm học tại trường, bởi vì năm nay là năm cuối cấp rồi nên tôi chia sẻ trải nghiệm với mọi người, vào năm học tôi sẽ không có thời gian để tạo nên những thứ này nữa vì nó gần như là bất khả thì vì năm học lớp 9 sẽ rất khó khăn và thử thách để vào ngôi trường cấp 3 mong ước.  
+Tôi là một học sinh của trường THCS Mỹ Xá của tỉnh Nam Định cũ và sau đây là những giáo viên tôi đã từng học và tôi sẽ chia sẻ những trải nghiệm tôi có sau 3 năm học tại trường, bởi vì năm nay là năm cuối cấp rồi nên tôi chia sẻ trải nghiệm với mọi người, vào năm học tôi sẽ không có thời gian để tạo nên những thứ này nữa vì nó gần như là bất khả thì vì năm học lớp 9 sẽ rất khó khăn và thử thách để vào ngôi trường cấp 3 mong ước.</p>
+    </section>
 
-- Năm lớp 6 : Cô Lụa, phải nói cô là giáo viên rất thấu hiểu và có sự đồng cảm tốt nhất trong tất cả những giáo viên mà tôi từng học, cô có tính cách khá vui vẻ nhưng khi để cô căng thì cô cũng căng cực :).  
-    
-- Năm lớp 7 : Cô Hải Anh, cô là một giáo viên trẻ và có tính cách khá hiền cũng như cô là một giáo viên dạy rất giỏi, nhưng thứ tôi ấn tượng nhất về cô là vẻ đẹp và ngoại hình của cô :), cô khá xinh đẹp :).
-    
-- Năm lớp 8 : Huế Già, xin lỗi vì đã nói như vậy, nhưng đây là một giáo viên tôi ghét nhất trong tất cả 8 năm học vừa qua từ tiểu học đến trung học, cô ấy không có khả năng dạy học gì cả, gần như là 100% phụ thuộc vào máy tính và giáo án có sẵn, gần như cô không có kiến thức gì cả, thậm chí không phải nói quá nhưng kiến thức của cô còn thua cả học sinh. Cách giải quyết vấn đề trong và ngoài lớp của cô rất thiếu sự công bằng, gần như cô chỉ làm theo ý cô chứ không tuân theo luật lệ hay quy tắc gì cả và cô rất hay trù dập học sinh và nói xấu học sinh với những lớp khác. Phải nói đây là một những giáo viên tệ nhất tôi từng học, nếu được thì tôi muốn gửi đến nhà trường rằng hãy đuổi việc cô Huế đi vì gần như cô không có một chút kiến thức gì, lâu lâu tôi còn nhìn lén được cô dùng VietJack để giảng dạy bài cho học sinh.
-    
-- Năm lớp 9 : Thầy Mạnh, đây là giáo viên chủ nhiệm đầu tiên của tôi dạy môn toán trong suốt 8 năm học vừa qua :), thầy cũng còn trẻ nhưng thầy dạy khá giỏi, thầy cũng có tính cách khá bựa vì thầy còn trẻ, còn vào năm học thì chưa biết được :).
-  </p>
+    <h2 class="section-title">Trải Nghiệm Giáo Viên Tại Trường</h2>
+    <section class="glass-box">
+      <div class="teacher-list">
+        <div class="teacher-item">
+          <span class="name-highlight">Năm lớp 6 : Cô Lụa</span>, phải nói cô là giáo viên rất thấu hiểu và có sự đồng cảm tốt nhất trong tất cả những giáo viên mà tôi từng học, cô có tính cách khá vui vẻ nhưng khi để cô căng thì cô cũng căng cực :).
+        </div>
+        <div class="teacher-item">
+          <span class="name-highlight">Năm lớp 7 : Cô Hải Anh</span>, cô là một giáo viên trẻ và có tính cách khá hiền cũng như cô là một giáo viên dạy rất giỏi, nhưng thứ tôi ấn tượng nhất về cô là vẻ đẹp và ngoại hình của cô :), cô khá xinh đẹp :).
+        </div>
+        <div class="teacher-item">
+          <span class="name-highlight">Năm lớp 8 : Huế Già</span>, xin lỗi vì đã nói như vậy, nhưng đây là một giáo viên tôi ghét nhất trong tất cả 8 năm học vừa qua từ tiểu học đến trung học, cô ấy không có khả năng dạy học gì cả, gần như là 100% phụ thuộc vào máy tính và giáo án có sẵn, gần như cô không có kiến thức gì cả, thậm chí không phải nói quá nhưng kiến thức của cô còn thua cả học sinh. Cách giải quyết vấn đề trong và ngoài lớp của cô rất thiếu sự công bằng, gần như cô chỉ làm theo ý cô chứ không tuân theo luật lệ hay quy tắc gì cả và cô rất hay trù dập học sinh và nói xấu học sinh với những lớp khác. Phải nói đây là một những giáo viên tệ nhất tôi từng học, nếu được thì tôi muốn gửi đến nhà trường rằng hãy đuổi việc cô Huế đi vì gần như cô không có một chút kiến thức gì, lâu lâu tôi còn nhìn lén được cô dùng VietJack để giảng dạy bài cho học sinh.
+        </div>
+        <div class="teacher-item">
+          <span class="name-highlight">Năm lớp 9 : Thầy Mạnh</span>, đây là giáo viên chủ nhiệm đầu tiên của tôi dạy môn toán trong suốt 8 năm học vừa qua :), thầy cũng còn trẻ nhưng thầy dạy khá giỏi, thầy cũng có tính cách khá bựa vì thầy còn trẻ, còn vào năm học thì chưa biết được :).
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 HoangTienMinh. All rights reserved.</footer>
 
   <script>
-    // Tạo sao
-    for (let i = 0; i < 200; i++) {
-      const star = document.createElement("div");
-      star.className = "star";
-      const size = Math.random() * 3 + "px";
-      star.style.width = size;
-      star.style.height = size;
-      star.style.top = Math.random() * 100 + "%";
-      star.style.left = Math.random() * 100 + "%";
-      star.style.animationDuration = (Math.random() * 2 + 1) + "s";
-      document.body.appendChild(star);
+    const bgMusic = document.getElementById("bg-music");
+
+    function tryAutoplayMusic() {
+      if (!bgMusic) return;
+      bgMusic.play().catch(() => {
+        const unlockOnce = () => {
+          bgMusic.play().catch(() => {});
+          document.removeEventListener("click", unlockOnce);
+          document.removeEventListener("touchstart", unlockOnce);
+          document.removeEventListener("keydown", unlockOnce);
+        };
+        document.addEventListener("click", unlockOnce, { once: true });
+        document.addEventListener("touchstart", unlockOnce, { once: true });
+        document.addEventListener("keydown", unlockOnce, { once: true });
+      });
     }
 
-    // Sao băng
-    setInterval(() => {
-      const shootingStar = document.createElement("div");
-      shootingStar.className = "shooting-star";
-      shootingStar.style.top = Math.random() * 50 + "%";
-      shootingStar.style.left = Math.random() * 100 + "%";
-      document.body.appendChild(shootingStar);
+    window.addEventListener("DOMContentLoaded", tryAutoplayMusic);
+    tryAutoplayMusic();
 
-      setTimeout(() => shootingStar.remove(), 3000);
-    }, 4000);
+    document.querySelectorAll(".glass-box").forEach((box) => {
+      box.addEventListener("mousemove", (e) => {
+        const rect = box.getBoundingClientRect();
+        box.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+        box.style.setProperty("--my", `${e.clientY - rect.top}px`);
+      });
+    });
+
+    const canvas = document.getElementById("sky-canvas");
+    const ctx = canvas.getContext("2d");
+
+    let width, height, stars = [], shootingStars = [];
+    let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+
+    const STAR_COLORS = [
+      "255, 255, 255",
+      "210, 232, 255",
+      "255, 244, 224"
+    ];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      const starCount = Math.min(420, Math.floor((width * height) / 3400));
+
+      stars = Array.from({ length: starCount }, () => {
+        const twinkles = Math.random() < 0.38;
+        const depth = Math.random() * 0.8 + 0.2;
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: (Math.random() * 1.1 + 0.35) * (0.6 + depth * 0.6),
+          alpha: Math.random() * 0.65 + 0.25,
+          minAlpha: Math.random() * 0.2 + 0.15,
+          maxAlpha: Math.random() * 0.25 + 0.72,
+          delta: twinkles
+            ? (Math.random() * 0.0035 + 0.0015) * (Math.random() < 0.5 ? 1 : -1)
+            : (Math.random() * 0.0006 + 0.0002) * (Math.random() < 0.5 ? 1 : -1),
+          color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+          depth
+        };
+      });
+    }
+
+    function scheduleShootingStar() {
+      const delay = Math.random() * 3500 + 2500;
+      setTimeout(() => {
+        spawnShootingStar();
+        scheduleShootingStar();
+      }, delay);
+    }
+
+    function spawnShootingStar() {
+      const angle = (Math.random() * 14 + 32) * (Math.PI / 180);
+      const speed = Math.random() * 5 + 11;
+      shootingStars.push({
+        x: Math.random() * width * 0.9 + width * 0.15,
+        y: Math.random() * height * 0.35,
+        vx: -Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len: Math.random() * 90 + 80,
+        speed,
+        life: 1,
+        decay: Math.random() * 0.008 + 0.022
+      });
+    }
+
+    document.getElementById("wish-btn").addEventListener("click", () => {
+      spawnShootingStar();
+      setTimeout(spawnShootingStar, 220);
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      targetX = (e.clientX - width / 2) * 0.018;
+      targetY = (e.clientY - height / 2) * 0.018;
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      mouseX += (targetX - mouseX) * 0.04;
+      mouseY += (targetY - mouseY) * 0.04;
+
+      const isMobile = width <= 600;
+
+      for (const s of stars) {
+        s.alpha += s.delta;
+        if (s.alpha <= s.minAlpha || s.alpha >= s.maxAlpha) {
+          s.delta *= -1;
+        }
+
+        const drawX = (s.x - mouseX * s.depth + width) % width;
+        const drawY = (s.y - mouseY * s.depth + height) % height;
+
+        ctx.beginPath();
+        ctx.arc(drawX, drawY, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${s.color}, ${s.alpha.toFixed(3)})`;
+        ctx.fill();
+
+        if (isMobile && s.r > 0.85) {
+          const glowColor = s.color === "210, 232, 255"
+            ? `rgba(56, 189, 248, ${(s.alpha * 0.22).toFixed(3)})`
+            : `rgba(168, 85, 247, ${(s.alpha * 0.18).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(drawX, drawY, s.r * 3.4, 0, Math.PI * 2);
+          ctx.fillStyle = glowColor;
+          ctx.fill();
+        }
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const st = shootingStars[i];
+        st.x += st.vx;
+        st.y += st.vy;
+        st.life -= st.decay;
+
+        if (st.life <= 0 || st.x < -200 || st.y > height + 200) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+
+        const tailX = st.x - (st.vx / st.speed) * st.len;
+        const tailY = st.y - (st.vy / st.speed) * st.len;
+        const grad = ctx.createLinearGradient(st.x, st.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${st.life.toFixed(2)})`);
+        grad.addColorStop(0.3, isMobile ? `rgba(125, 211, 252, ${(st.life * 0.72).toFixed(2)})` : `rgba(186, 230, 253, ${(st.life * 0.6).toFixed(2)})`);
+        grad.addColorStop(0.65, isMobile ? `rgba(192, 132, 252, ${(st.life * 0.35).toFixed(2)})` : `rgba(186, 230, 253, 0)`);
+        grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.beginPath();
+        ctx.moveTo(st.x, st.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(st.x, st.y, 1.6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${st.life.toFixed(2)})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    setTimeout(spawnShootingStar, 1200);
+    scheduleShootingStar();
+    draw();
   </script>
 </body>
 </html>
