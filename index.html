@@ -2,115 +2,765 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HoangTienMinh | Trang Web Cá Nhân Của Hoàng Tiến Minh</title>
   <link rel="icon" type="image/png" sizes="32x32" href="https://media.dolenglish.vn/PUBLIC/MEDIA/5MiT7vLYayJ9E9Vc5JcAP.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      height: 100vh;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Be Vietnam Pro', Arial, sans-serif;
+      color: #f4f7fb;
+      background:
+        linear-gradient(125deg, transparent 20%, rgba(56, 189, 248, 0.06) 45%, rgba(139, 92, 246, 0.07) 55%, transparent 80%),
+        radial-gradient(circle at 18% 22%, rgba(56, 189, 248, 0.12), transparent 38%),
+        radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.12), transparent 42%),
+        radial-gradient(ellipse at bottom, #131d2b 0%, #06080d 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 20px 64px;
+    }
+
+    #sky-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .top-controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      border-color: rgba(125, 211, 252, 0.55);
+      color: #ffffff;
+      background: rgba(30, 41, 59, 0.85);
+    }
+
+    .ctrl-btn.playing {
+      border-color: rgba(56, 239, 125, 0.65);
+      color: #6ee7b7;
+      box-shadow: 0 0 12px rgba(56, 239, 125, 0.22);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 880px;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
+      margin-bottom: 36px;
+      animation: fadeUp 0.7s ease both;
     }
-    h1 {
-      margin-top: 100px;
-      font-size: 3rem;
-      text-shadow: 0 0 10px rgba(255,255,255,0.6);
+
+    /* --- VÒNG TRÒN QUANG PHỔ XOAY QUANH AVATAR (ĐÃ TĂNG KÍCH THƯỚC) --- */
+    .avatar-container {
+      position: relative;
+      width: 248px;
+      height: 248px;
+      margin-bottom: 24px;
+      transition: transform 0.3s ease;
     }
-    p {
-      margin-top: 15px;
-      font-size: 1.2rem;
+
+    @media (max-width: 480px) {
+      .avatar-container {
+        width: 204px;
+        height: 204px;
+      }
     }
-    .contact {
-      margin-top: 40px;
-      font-size: 1.1rem;
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 12px;
-      display: inline-block;
-      line-height: 1.8;
+
+    .avatar-container:hover {
+      transform: scale(1.03);
     }
+
+    .avatar-container::before {
+      content: '';
+      position: absolute;
+      inset: -7px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff0055, #00ffff, #ff00ff, #38ef7d, #ff0055);
+      background-size: 400%;
+      z-index: 0;
+      animation: glowingBorder 4s linear infinite;
+      filter: blur(6px);
+      opacity: 0.88;
+    }
+
+    .avatar-container::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(120deg, #38ef7d, #11998e, #ff4757, #ffffff);
+      background-size: 300%;
+      z-index: 0;
+      animation: spinRing 6s linear infinite;
+    }
+
+    @keyframes glowingBorder {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes spinRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #050505;
+      border: 3px solid rgba(255, 255, 255, 0.92);
+      object-fit: cover;
+      display: block;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38ef7d;
+      box-shadow: 0 0 8px #38ef7d;
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .hero-heading {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: clamp(1.8rem, 4.2vw, 2.85rem);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .galaxy-emoji {
+      font-size: 0.95em;
+      line-height: 1;
+    }
+
+    /* Tiêu đề chính: quang phổ trôi chậm rãi (15s) */
+    .spectral-title {
+      font-size: inherit;
+      font-weight: 700;
+      line-height: 1.25;
+      background: linear-gradient(90deg, #ff6b9d, #00ffff, #e879f9, #38ef7d, #ff6b9d);
+      background-size: 350% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: spectralShift 15s linear infinite;
+      filter: drop-shadow(0 0 14px rgba(0, 255, 255, 0.15));
+    }
+
+    .spectral-highlight {
+      font-weight: 700;
+      background: linear-gradient(90deg, #7dd3fc, #f0abfc, #6ee7b7, #7dd3fc);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: spectralShift 14s linear infinite;
+    }
+
+    @keyframes spectralShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Hiệu ứng chuyển động cho toàn bộ dòng mô tả */
+    .subtitle {
+      margin-top: 14px;
+      font-size: clamp(0.98rem, 2vw, 1.12rem);
+      font-weight: 500;
+      max-width: 720px;
+      line-height: 1.6;
+      background: linear-gradient(
+        90deg,
+        #7dd3fc 0%,
+        #f0abfc 28%,
+        #6ee7b7 55%,
+        #93c5fd 80%,
+        #7dd3fc 100%
+      );
+      background-size: 280% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: subtitleWave 10s ease-in-out infinite;
+      filter: drop-shadow(0 0 10px rgba(125, 211, 252, 0.2));
+    }
+
+    @keyframes subtitleWave {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      color: #94a3b8;
+      margin: 28px 0 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      --mx: 50%;
+      --my: 50%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-decoration: none;
+      color: #f8fafc;
+      background: rgba(15, 23, 42, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 15px 18px;
+      border-radius: 16px;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(260px circle at var(--mx) var(--my), rgba(125, 211, 252, 0.14), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(125, 211, 252, 0.5);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38);
+    }
+
+    .card-main {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Hiển thị đầy đủ nội dung nhãn, không cắt thành ... */
+    .card-label {
+      font-size: 0.83rem;
+      color: #94a3b8;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(125, 211, 252, 0.14);
+      color: #7dd3fc;
+      border: 1px solid rgba(125, 211, 252, 0.25);
+      flex-shrink: 0;
+    }
+
+    .badge.warn {
+      background: rgba(251, 113, 133, 0.14);
+      color: #fda4af;
+      border-color: rgba(251, 113, 133, 0.28);
+    }
+
+    /* Hiển thị đầy đủ giá trị */
+    .card-value {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #e0f2fe;
+      line-height: 1.35;
+      word-break: break-word;
+      margin-top: 4px;
+      transition: filter 0.25s ease;
+    }
+
+    .card:hover .card-value {
+      filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.35));
+    }
+
+    .card-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #cbd5e1;
+      font-size: 0.76rem;
+      padding: 5px 9px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(125, 211, 252, 0.22);
+      color: #ffffff;
+    }
+
+    .arrow {
+      position: relative;
+      z-index: 1;
+      color: #64748b;
+      font-size: 1.05rem;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .card:hover .arrow {
+      transform: translateX(3px);
+      color: #7dd3fc;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 36px;
+      right: 24px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(125, 211, 252, 0.45);
+      color: #e0f2fe;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     footer {
       position: absolute;
       bottom: 10px;
+      left: 0;
       width: 100%;
+      z-index: 1;
       font-size: 0.9rem;
       color: #aaa;
+      text-align: center;
     }
-    /* 🌠 Ngôi sao tĩnh lấp lánh */
-    .star {
-      position: absolute;
-      width: 1.25px;
-      height: 1.25px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: twinkle 2s infinite alternate;
-    }
-    @keyframes twinkle {
-      from { opacity: 0.2; transform: scale(1); }
-      to   { opacity: 1;   transform: scale(1.5); }
-    }
-    /* 💫 Sao băng */
-    .shooting-star {
-      position: absolute;
-      width: 3px;
-      height: 85px;
-      background: linear-gradient(-45deg, white, rgba(255,255,255,0));
-      opacity: 0.8;
-      transform: rotate(45deg);
-      animation: fall 2s linear;
-    }
-    @keyframes fall {
-      0% {
-        transform: translateY(-200px) translateX(0) rotate(45deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(800px) translateX(-800px) rotate(45deg);
-        opacity: 0;
-      }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <h1>🌌 Chào Mừng Đến Với Website Của Hoàng Tiến Minh</h1>
-  <p>Website Cá Nhân Của Tôi - Nơi Để Chúng Ta Chia Sẻ Và Kết Nối Với Nhau :) 🚀</p>
-  <div class="contact">
-    📱 Phone: <a href="tel:0915517511" style="color: #4fc3f7;">0915517511</a><br>
-    🌐 Facebook: <a href="https://www.facebook.com/HoangTienMinh2982011" target="_blank" style="color: #4fc3f7;">Hoàng Tiến Minh</a><br>
-    🔗 TikTok: <a href="https://tiktok.com/@no_name_2982011" style="color: #4fc3f7; font-size: 1.2rem;">công chúa nhỏ 🥺🎀🧸</a><br>
-    📧 Email: <a href="mailto:hoangtienminh2982011@gmail.com" style="color: #4fc3f7;">hoangtienminh2982011@gmail.com</a><br>
-    🎹 Test Thử Trình Độ Piano 😛 : <a href="https://hoangtienminh.github.io/piano/" style="color: #4fc3f7; font-size: 1.2rem;">Nghịch Đi :)</a><br>
-    📖 Nơi Nói Về Bản Thân: <a href="https://hoangtienminh.github.io/gioithieubanthan/" style="color: #4fc3f7; font-size: 1.2rem;">Giới Thiệu Bản Thân</a><br>
-    🌅 Một Số Dự Án Của Tôi: <a href="https://hoangtienminh.github.io/traidat3d/" style="color: #4fc3f7; font-size: 1.2rem;">Mô Hình 3D Trái Đất</a><br>
-    💻 Share Tool Hack Free Fire Free : <a href="https://www.mediafire.com/folder/euvh8whl3adnr/HACKFREEFIRE" style="color: #4fc3f7; font-size: 1.2rem;">Hack Free Fire</a><br>
-    📁 Virus Do Tôi Tự Lập Trình 😈 : <a href="https://www.mediafire.com/folder/2g9uzwyvw73sw/VIRUS" style="color: #4fc3f7; font-size: 1.2rem;">Virus.exe Download ⚠️</a><br>
+  <canvas id="sky-canvas"></canvas>
+
+  <audio id="bg-music" src="denkhinao.mp3" loop preload="auto"></audio>
+
+  <div class="top-controls">
+    <button type="button" class="ctrl-btn" id="wish-btn">🌠 Gọi sao băng</button>
+    <button type="button" class="ctrl-btn" id="music-btn">🎵 Bật nhạc</button>
   </div>
+
+  <main class="container">
+    <header class="hero">
+      <div class="avatar-container">
+        <img class="avatar" src="https://cdn.upanhlaylink.com/i/h7cPGmXJ.png" alt="Hoàng Tiến Minh">
+      </div>
+      <div class="hero-heading">
+        <span class="galaxy-emoji" aria-hidden="true">🌌</span>
+        <h1 class="spectral-title">Chào Mừng Đến Với Website Của</h1><br>
+        <h1 class="spectral-title">Hoàng Tiến Minh</h1>
+      </div>
+      <p class="subtitle">Website Cá Nhân Của Tôi - Nơi Để Chúng Ta Chia Sẻ Và Kết Nối Với Nhau :)</p>
+    </header>
+
+    <h2 class="section-title">Liên Hệ & Mạng Xã Hội</h2>
+    <div class="grid">
+      <a class="card" href="tel:0915517511">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">📱 Phone</span>
+          </div>
+          <span class="card-value spectral-highlight">0915517511</span>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="copy-btn" data-copy="0915517511">Copy</button>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="mailto:hoangtienminh2982011@gmail.com">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">📧 Email</span>
+          </div>
+          <span class="card-value spectral-highlight">hoangtienminh2982011@gmail.com</span>
+        </div>
+        <div class="card-actions">
+          <button type="button" class="copy-btn" data-copy="hoangtienminh2982011@gmail.com">Copy</button>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.facebook.com/HoangTienMinh2982011" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">🌐 Facebook</span>
+          </div>
+          <span class="card-value spectral-highlight">Hoàng Tiến Minh</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://tiktok.com/@no_name_2982011" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">🔗 TikTok</span>
+          </div>
+          <span class="card-value spectral-highlight">công chúa nhỏ 🥺🎀🧸</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <h2 class="section-title">Dự Án & Liên Kết Khác</h2>
+    <div class="grid">
+      <a class="card" href="https://hoangtienminh.github.io/piano/" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">🎹 Test Thử Trình Độ Piano 😛</span>
+            <span class="badge">Web App</span>
+          </div>
+          <span class="card-value spectral-highlight">Nghịch Đi :)</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://hoangtienminh.github.io/gioithieubanthan/" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">📖 Nơi Nói Về Bản Thân</span>
+            <span class="badge">Bio</span>
+          </div>
+          <span class="card-value spectral-highlight">Giới Thiệu Bản Thân</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://hoangtienminh.github.io/traidat3d/" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">🌅 Một Số Dự Án Của Tôi</span>
+            <span class="badge">3D</span>
+          </div>
+          <span class="card-value spectral-highlight">Mô Hình 3D Trái Đất</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://www.mediafire.com/folder/euvh8whl3adnr/HACKFREEFIRE" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">💻 Share Tool Hack Free Fire Free</span>
+            <span class="badge">Folder</span>
+          </div>
+          <span class="card-value spectral-highlight">Hack Free Fire</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="card" href="https://www.mediafire.com/folder/2g9uzwyvw73sw/VIRUS" target="_blank" rel="noopener noreferrer">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-label">📁 Virus Do Tôi Tự Lập Trình 😈</span>
+            <span class="badge warn">Lab</span>
+          </div>
+          <span class="card-value spectral-highlight">Virus.exe Download ⚠️</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </main>
+
+  <div id="toast" class="toast">Đã sao chép!</div>
   <footer>© 2026 HoangTienMinh. All rights reserved.</footer>
+
   <script>
-    // 🌟 Tạo nhiều ngôi sao hơn
-    for (let i = 0; i < 500; i++) {
-      const star = document.createElement("div");
-      star.classList.add("star");
-      star.style.top = Math.random() * window.innerHeight + "px";
-      star.style.left = Math.random() * window.innerWidth + "px";
-      star.style.animationDelay = Math.random() * 2 + "s";
-      document.body.appendChild(star);
+    document.querySelectorAll(".card").forEach((card, idx) => {
+      card.style.animationDelay = `${0.08 + idx * 0.04}s`;
+      card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+        card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+      });
+    });
+
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
     }
-    // 💫 Hàm tạo sao băng
-    function createShootingStar() {
-      const star = document.createElement("div");
-      star.classList.add("shooting-star");
-      document.body.appendChild(star);
-      star.style.top = Math.random() * window.innerHeight * 0.5 + "px";
-      star.style.left = Math.random() * window.innerWidth + "px";
-      setTimeout(() => { star.remove(); }, 2000);
+
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const text = btn.dataset.copy;
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`Đã sao chép: ${text}`);
+        });
+      });
+    });
+
+    // Điều khiển nhạc nền denkhinao.mp3
+    const bgMusic = document.getElementById("bg-music");
+    const musicBtn = document.getElementById("music-btn");
+
+    musicBtn.addEventListener("click", () => {
+      if (bgMusic.paused) {
+        bgMusic.play().then(() => {
+          musicBtn.textContent = "⏸️ Tắt nhạc";
+          musicBtn.classList.add("playing");
+        }).catch(() => {
+          showToast("Không thể phát tệp denkhinao.mp3!");
+        });
+      } else {
+        bgMusic.pause();
+        musicBtn.textContent = "🎵 Bật nhạc";
+        musicBtn.classList.remove("playing");
+      }
+    });
+
+    const canvas = document.getElementById("sky-canvas");
+    const ctx = canvas.getContext("2d");
+
+    let width, height, stars = [], shootingStars = [];
+    let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+
+    const STAR_COLORS = [
+      "255, 255, 255",
+      "210, 232, 255",
+      "255, 244, 224"
+    ];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      const starCount = Math.min(420, Math.floor((width * height) / 3400));
+
+      stars = Array.from({ length: starCount }, () => {
+        const twinkles = Math.random() < 0.38;
+        const depth = Math.random() * 0.8 + 0.2;
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: (Math.random() * 1.1 + 0.35) * (0.6 + depth * 0.6),
+          alpha: Math.random() * 0.65 + 0.25,
+          minAlpha: Math.random() * 0.2 + 0.15,
+          maxAlpha: Math.random() * 0.25 + 0.72,
+          delta: twinkles
+            ? (Math.random() * 0.0035 + 0.0015) * (Math.random() < 0.5 ? 1 : -1)
+            : (Math.random() * 0.0006 + 0.0002) * (Math.random() < 0.5 ? 1 : -1),
+          color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+          depth
+        };
+      });
     }
-    // Tạo sao băng liên tục (nhanh hơn)
-    setInterval(createShootingStar, 625);
+
+    function scheduleShootingStar() {
+      const delay = Math.random() * 3500 + 2500;
+      setTimeout(() => {
+        spawnShootingStar();
+        scheduleShootingStar();
+      }, delay);
+    }
+
+    function spawnShootingStar() {
+      const angle = (Math.random() * 14 + 32) * (Math.PI / 180);
+      const speed = Math.random() * 5 + 11;
+      shootingStars.push({
+        x: Math.random() * width * 0.9 + width * 0.15,
+        y: Math.random() * height * 0.35,
+        vx: -Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len: Math.random() * 90 + 80,
+        speed,
+        life: 1,
+        decay: Math.random() * 0.008 + 0.022
+      });
+    }
+
+    document.getElementById("wish-btn").addEventListener("click", () => {
+      spawnShootingStar();
+      setTimeout(spawnShootingStar, 220);
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      targetX = (e.clientX - width / 2) * 0.018;
+      targetY = (e.clientY - height / 2) * 0.018;
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      mouseX += (targetX - mouseX) * 0.04;
+      mouseY += (targetY - mouseY) * 0.04;
+
+      for (const s of stars) {
+        s.alpha += s.delta;
+        if (s.alpha <= s.minAlpha || s.alpha >= s.maxAlpha) {
+          s.delta *= -1;
+        }
+
+        const drawX = (s.x - mouseX * s.depth + width) % width;
+        const drawY = (s.y - mouseY * s.depth + height) % height;
+
+        ctx.beginPath();
+        ctx.arc(drawX, drawY, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${s.color}, ${s.alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const st = shootingStars[i];
+        st.x += st.vx;
+        st.y += st.vy;
+        st.life -= st.decay;
+
+        if (st.life <= 0 || st.x < -200 || st.y > height + 200) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+
+        const tailX = st.x - (st.vx / st.speed) * st.len;
+        const tailY = st.y - (st.vy / st.speed) * st.len;
+        const grad = ctx.createLinearGradient(st.x, st.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${st.life.toFixed(2)})`);
+        grad.addColorStop(0.3, `rgba(186, 230, 253, ${(st.life * 0.6).toFixed(2)})`);
+        grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.beginPath();
+        ctx.moveTo(st.x, st.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(st.x, st.y, 1.6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${st.life.toFixed(2)})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    setTimeout(spawnShootingStar, 1200);
+    scheduleShootingStar();
+    draw();
   </script>
 </body>
 </html>
