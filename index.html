@@ -711,10 +711,10 @@
     const switchMusicBtn = document.getElementById("switch-music-btn");
 
     const randomPlaylist = [
-      "emthuacota.mp3",
-      "trachoanh.mp3",
-      "tungyeu.mp3",
-      "songaymaiemdimat.mp3"
+      "Em Thua Cô Ta.mp3",
+      "Trả Cho Anh.mp3",
+      "Từng Yêu.mp3",
+      "Sợ Ngày Mai Em Đi Mất.mp3"
     ];
     let currentTrack = "";
 
@@ -756,7 +756,7 @@
         bgMusic.play().then(() => {
           syncPlayState();
         }).catch(() => {
-          showToast(`Không thể phát tệp ${currentTrack || "denkhinao.mp3"}!`);
+          showToast(`Không thể phát tệp ${currentTrack || "Đến Khi Nào.mp3"}!`);
         });
       } else {
         bgMusic.pause();
