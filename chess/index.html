@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cờ Vua Online 2 Người - Cosmic Chess</title>
+    <title>Cờ Vua Online 2 Người - Cosmic Chess Royal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Chess.js (Full Chess Rules Engine) -->
+    <!-- Chess.js (Full International Chess Rules Engine) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <!-- PeerJS (WebRTC P2P Multiplayer without custom backend) -->
+    <!-- PeerJS (WebRTC P2P Multiplayer) -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
     <style>
         :root {
-            --bg-deep: #050814;
-            --bg-nebula: #0c142c;
-            --board-light: #e2e8f0;
-            --board-dark: #475569;
-            --highlight-selected: rgba(56, 189, 248, 0.55);
-            --highlight-last: rgba(250, 204, 21, 0.42);
-            --highlight-check: radial-gradient(circle, rgba(239,68,68,0.9) 0%, rgba(220,38,38,0.4) 65%, transparent 80%);
+            --bg-deep: #040711;
+            --board-light: #e7dec8;
+            --board-dark: #4b5d73;
+            --gold-accent: #f59e0b;
+            --highlight-selected: rgba(245, 158, 11, 0.48);
+            --highlight-last: rgba(56, 189, 248, 0.36);
+            --highlight-check: radial-gradient(circle, rgba(239, 68, 68, 0.92) 0%, rgba(185, 28, 28, 0.55) 65%, transparent 82%);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at bottom, #111c3d 0%, #050814 100%);
+            background: radial-gradient(circle at 50% 0%, #111b36 0%, #060a17 55%, #03050c 100%);
             color: #f8fafc;
             min-height: 100vh;
             overflow-x: hidden;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Cosmic Starry Background */
@@ -41,26 +42,37 @@
             pointer-events: none;
         }
 
-        /* Glassmorphism Panels */
+        /* Luxury Glassmorphism Panels */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(148, 163, 184, 0.16);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.76), rgba(9, 14, 28, 0.85));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(251, 191, 36, 0.14);
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
-        /* Chessboard Responsive Container */
+        /* Chessboard Outer Metallic/Wood Frame */
+        .board-frame {
+            padding: 8px;
+            border-radius: 1rem;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(245, 158, 11, 0.32);
+            box-shadow:
+                0 0 60px rgba(245, 158, 11, 0.1),
+                0 30px 60px -15px rgba(0, 0, 0, 0.9),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12);
+        }
+
         .board-wrapper {
             width: 100%;
-            max-width: min(86vw, 540px);
+            max-width: min(88vw, 540px);
             aspect-ratio: 1 / 1;
             position: relative;
         }
 
         @media (min-width: 1024px) {
             .board-wrapper {
-                max-width: min(74vh, 580px);
+                max-width: min(72vh, 576px);
             }
         }
 
@@ -70,10 +82,9 @@
             grid-template-rows: repeat(8, 1fr);
             width: 100%;
             height: 100%;
-            border-radius: 0.75rem;
+            border-radius: 0.65rem;
             overflow: hidden;
-            border: 3px solid rgba(148, 163, 184, 0.3);
-            box-shadow: 0 0 50px rgba(56, 189, 248, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
         }
 
         .square {
@@ -82,15 +93,16 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.15s ease;
+            transition: background-color 0.14s ease;
         }
 
+        /* Warm Ivory & Deep Slate-Blue Tournament Squares */
         .square.light {
-            background-color: #cbd5e1;
+            background: linear-gradient(135deg, #ede4d0 0%, #dfd3b8 100%);
         }
 
         .square.dark {
-            background-color: #334155;
+            background: linear-gradient(135deg, #4b5e78 0%, #39495e 100%);
         }
 
         .square.last-move::after {
@@ -98,6 +110,7 @@
             position: absolute;
             inset: 0;
             background: var(--highlight-last);
+            box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.4);
             pointer-events: none;
         }
 
@@ -106,11 +119,18 @@
             position: absolute;
             inset: 0;
             background: var(--highlight-selected);
+            box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.65);
             pointer-events: none;
+        }
+
+        @keyframes checkPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
         }
 
         .square.in-check {
             background: var(--highlight-check) !important;
+            animation: checkPulse 1.1s infinite ease-in-out;
         }
 
         /* Legal Move Indicators */
@@ -118,38 +138,49 @@
             width: 28%;
             height: 28%;
             border-radius: 9999px;
-            background-color: rgba(14, 165, 233, 0.65);
-            box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.9) 0%, rgba(217, 119, 6, 0.7) 100%);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
             pointer-events: none;
             z-index: 15;
-            transition: transform 0.12s ease;
+            transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .square:hover .legal-dot {
-            transform: scale(1.25);
+            transform: scale(1.28);
         }
 
         .legal-capture {
             position: absolute;
-            inset: 6%;
+            inset: 7%;
             border-radius: 9999px;
-            border: 4px solid rgba(244, 63, 94, 0.75);
+            border: 4px solid rgba(244, 63, 94, 0.82);
+            box-shadow: 0 0 10px rgba(244, 63, 94, 0.4), inset 0 0 8px rgba(244, 63, 94, 0.3);
             pointer-events: none;
             z-index: 15;
+            transition: transform 0.14s ease;
         }
 
-        /* Chess Pieces SVG */
+        .square:hover .legal-capture {
+            transform: scale(1.06);
+        }
+
+        /* Staunton 3D-Shaded Chess Pieces */
         .piece {
-            width: 82%;
-            height: 82%;
+            width: 84%;
+            height: 84%;
             z-index: 10;
-            transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1);
-            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.45));
+            transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), filter 0.16s ease;
+            filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.48));
             pointer-events: none;
         }
 
         .square:hover .piece {
-            transform: translateY(-2px) scale(1.04);
+            transform: translateY(-3px) scale(1.05);
+            filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.55));
+        }
+
+        .square.selected .piece {
+            transform: translateY(-4px) scale(1.07);
         }
 
         /* Board Coordinates */
@@ -158,10 +189,11 @@
             top: 2px;
             left: 4px;
             font-size: 0.65rem;
-            font-weight: 700;
+            font-weight: 800;
             font-family: 'JetBrains Mono', monospace;
             pointer-events: none;
             z-index: 5;
+            opacity: 0.85;
         }
 
         .coord-file {
@@ -169,43 +201,45 @@
             bottom: 1px;
             right: 4px;
             font-size: 0.65rem;
-            font-weight: 700;
+            font-weight: 800;
             font-family: 'JetBrains Mono', monospace;
             pointer-events: none;
             z-index: 5;
+            opacity: 0.85;
         }
 
         .square.light .coord-rank, .square.light .coord-file {
-            color: #334155;
+            color: #39495e;
         }
 
         .square.dark .coord-rank, .square.dark .coord-file {
-            color: #cbd5e1;
+            color: #ede4d0;
         }
 
-        /* Custom Scrollbar for Move History */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.4);
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(100, 116, 139, 0.5);
+            background: rgba(245, 158, 11, 0.35);
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.7);
+            background: rgba(245, 158, 11, 0.6);
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.35); }
-            50% { box-shadow: 0 0 22px rgba(56, 189, 248, 0.75); }
+        @keyframes pulseGold {
+            0%, 100% { box-shadow: 0 0 14px rgba(245, 158, 11, 0.25); }
+            50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.6); }
         }
         .active-turn-badge {
-            animation: pulseGlow 2s infinite;
+            animation: pulseGold 2s infinite;
+            border-color: rgba(245, 158, 11, 0.55) !important;
         }
     </style>
 </head>
@@ -214,32 +248,33 @@
     <canvas id="starfield"></canvas>
 
     <!-- Header -->
-    <header class="relative z-10 w-full border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md">
+    <header class="relative z-10 w-full border-b border-amber-500/15 bg-slate-950/75 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25">
-                    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/25 border border-amber-300/40">
+                    <svg class="w-6 h-6 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 22H5v-2h14v2M17.16 8.26A4.96 4.96 0 0 0 18 5.5C18 3.57 16.43 2 14.5 2c-1.3 0-2.42.72-3 1.79A3.48 3.48 0 0 0 9.5 2C7.57 2 6 3.57 6 5.5c0 1.04.32 2 .84 2.76C5.15 9.54 4 11.63 4 14v4h16v-4c0-2.37-1.15-4.46-2.84-5.74Z"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-200 to-indigo-300 bg-clip-text text-transparent">
-                        COSMIC CHESS
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-400 bg-clip-text text-transparent">
+                        COSMIC CHESS ROYAL
                     </h1>
-                    <p class="text-xs text-slate-400">Cờ Vua Online 2 Người Trực Tuyến</p>
+                    <p class="text-[11px] text-slate-400">Cờ Vua Trực Tuyến • Kết Nối P2P Tốc Độ Cao</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Connection Status Pill -->
-                <div id="connection-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/90 border border-slate-700/80 text-slate-300">
+                <!-- Connection & Ping Status Pill -->
+                <div id="connection-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/95 border border-slate-700/80 text-slate-300">
                     <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                    <span id="status-text">Chưa kết nối phòng</span>
+                    <span id="status-text">Sẵn sàng</span>
+                    <span id="ping-badge" class="hidden font-mono text-[11px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">-- ms</span>
                 </div>
 
                 <!-- Sound Toggle -->
                 <button id="btn-sound" onclick="toggleSound()" title="Bật/Tắt âm thanh" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-200 transition">
-                    <svg id="icon-sound-on" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg id="icon-sound-on" class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
                     </svg>
                     <svg id="icon-sound-off" class="w-5 h-5 hidden text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -247,9 +282,9 @@
                     </svg>
                 </button>
 
-                <!-- Lobby / Mode Button -->
-                <button onclick="openLobbyModal()" class="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-sky-600/25 transition">
-                    Phòng Chơi
+                <!-- Lobby / Profile Button -->
+                <button onclick="openLobbyModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs sm:text-sm font-bold shadow-lg shadow-amber-500/20 transition">
+                    Sảnh & Tên
                 </button>
             </div>
         </div>
@@ -261,112 +296,133 @@
         <!-- Left / Center: Board + Player Bars -->
         <div class="flex flex-col items-center w-full lg:w-auto gap-3">
             
-            <!-- Top Player Bar (Opponent or Black) -->
-            <div id="top-player-bar" class="w-full max-w-[min(86vw,540px)] lg:max-w-[min(74vh,580px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
+            <!-- Top Player Bar -->
+            <div id="top-player-bar" class="w-full max-w-[calc(min(88vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
                 <div class="flex items-center gap-3">
-                    <div id="top-avatar" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center font-bold text-sm text-slate-200">
-                        ♟
+                    <div id="top-avatar" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center font-extrabold text-sm text-amber-300 shadow-inner">
+                        Đ
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span id="top-player-name" class="font-bold text-sm text-slate-100">Đối thủ (Đen)</span>
-                            <span id="top-turn-tag" class="hidden px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40">Đang đi</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="handlePlayerBarNameClick('top')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-slate-100 hover:text-amber-300 transition text-left">
+                                <span id="top-player-name">Đang chờ đối thủ...</span>
+                                <svg id="top-edit-icon" class="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                            <span id="top-color-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Quân Đen</span>
+                            <span id="top-turn-tag" class="hidden px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Đang suy nghĩ</span>
                         </div>
-                        <div id="top-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-xs text-slate-300 mt-0.5"></div>
+                        <div id="top-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-sm text-slate-200 mt-0.5"></div>
                     </div>
                 </div>
-                <div id="top-advantage" class="font-mono text-xs font-bold text-emerald-400"></div>
+                <div id="top-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
             </div>
 
-            <!-- Chessboard -->
-            <div class="board-wrapper">
-                <div id="chessboard" class="chess-board"></div>
+            <!-- Chessboard with Luxury Frame -->
+            <div class="board-frame">
+                <div class="board-wrapper">
+                    <div id="chessboard" class="chess-board"></div>
 
-                <!-- Pawn Promotion Overlay -->
-                <div id="promotion-modal" class="hidden absolute inset-0 z-30 bg-slate-950/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-4">
-                    <p class="text-sm font-bold text-sky-300 mb-3 uppercase tracking-wider">Chọn quân phong cấp</p>
-                    <div id="promotion-choices" class="flex items-center gap-3 bg-slate-900/90 p-3 rounded-2xl border border-slate-700 shadow-2xl">
-                        <!-- Injected dynamically -->
+                    <!-- Pawn Promotion Overlay -->
+                    <div id="promotion-modal" class="hidden absolute inset-0 z-30 bg-slate-950/85 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-4">
+                        <p class="text-sm font-extrabold text-amber-300 mb-3 uppercase tracking-wider">Chọn quân phong cấp</p>
+                        <div id="promotion-choices" class="flex items-center gap-3 bg-slate-900/95 p-3.5 rounded-2xl border border-amber-500/40 shadow-2xl">
+                            <!-- Injected dynamically -->
+                        </div>
                     </div>
-                </div>
 
-                <!-- Game Over Overlay Banner -->
-                <div id="gameover-overlay" class="hidden absolute inset-0 z-25 bg-slate-950/75 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-6 text-center">
-                    <div class="glass-panel p-6 rounded-2xl max-w-xs w-full border border-sky-500/30">
-                        <div id="gameover-icon" class="text-4xl mb-2">🏆</div>
-                        <h2 id="gameover-title" class="text-xl font-extrabold text-white mb-1">Chiếu Bí!</h2>
-                        <p id="gameover-subtitle" class="text-sm text-slate-300 mb-5">Quân Trắng giành chiến thắng</p>
-                        <div class="flex flex-col gap-2">
-                            <button id="btn-rematch" onclick="requestRematch()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg transition">
-                                Chơi Ván Mới (Tái Đấu)
-                            </button>
-                            <button onclick="hideGameOverOverlay()" class="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition">
-                                Xem Lại Bàn Cờ
-                            </button>
+                    <!-- Game Over Overlay Banner -->
+                    <div id="gameover-overlay" class="hidden absolute inset-0 z-25 bg-slate-950/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-6 text-center">
+                        <div class="glass-panel p-6 rounded-2xl max-w-xs w-full border border-amber-500/40">
+                            <div id="gameover-icon" class="text-4xl mb-2">🏆</div>
+                            <h2 id="gameover-title" class="text-xl font-extrabold text-amber-200 mb-1">Chiếu Bí!</h2>
+                            <p id="gameover-subtitle" class="text-sm text-slate-300 mb-5">Quân Trắng giành chiến thắng</p>
+                            <div class="flex flex-col gap-2">
+                                <button id="btn-rematch" onclick="requestRematch()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm shadow-lg transition">
+                                    Chơi Ván Mới (Đổi Bên)
+                                </button>
+                                <button onclick="hideGameOverOverlay()" class="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition">
+                                    Xem Lại Bàn Cờ
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Player Bar (You or White) -->
-            <div id="bottom-player-bar" class="w-full max-w-[min(86vw,540px)] lg:max-w-[min(74vh,580px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
+            <!-- Bottom Player Bar -->
+            <div id="bottom-player-bar" class="w-full max-w-[calc(min(88vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
                 <div class="flex items-center gap-3">
-                    <div id="bottom-avatar" class="w-9 h-9 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-bold text-sm text-slate-900">
-                        ♙
+                    <div id="bottom-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow">
+                        K
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span id="bottom-player-name" class="font-bold text-sm text-white">Bạn (Trắng)</span>
-                            <span id="bottom-turn-tag" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40">Lượt của bạn</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="handlePlayerBarNameClick('bottom')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-white hover:text-amber-300 transition text-left">
+                                <span id="bottom-player-name">Kỳ Thủ (Bạn)</span>
+                                <svg id="bottom-edit-icon" class="w-3.5 h-3.5 text-slate-400 group-hover:text-amber-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            </button>
+                            <span id="bottom-color-badge" class="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30">Quân Trắng</span>
+                            <span id="bottom-turn-tag" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Lượt của bạn</span>
                         </div>
-                        <div id="bottom-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-xs text-slate-300 mt-0.5"></div>
+                        <div id="bottom-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-sm text-slate-200 mt-0.5"></div>
                     </div>
                 </div>
-                <div id="bottom-advantage" class="font-mono text-xs font-bold text-emerald-400"></div>
+                <div id="bottom-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
             </div>
         </div>
 
         <!-- Right Panel: Room Info, Move History & Controls -->
-        <aside class="w-full max-w-[min(86vw,540px)] lg:w-96 flex flex-col gap-4">
+        <aside class="w-full max-w-[calc(min(88vw,540px)+18px)] lg:w-96 flex flex-col gap-4">
             
             <!-- Room & Share Card -->
             <div class="glass-panel rounded-2xl p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Thông Tin Phòng</span>
-                    <span id="game-mode-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                        Chế độ: Chờ kết nối
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400/90">Phòng Thi Đấu</span>
+                    <span id="game-mode-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        Chưa vào phòng
                     </span>
                 </div>
 
-                <!-- Share Link Box (Visible when online room created) -->
+                <!-- Share Link Box (Visible when online room active) -->
                 <div id="room-share-box" class="hidden mt-3 space-y-2.5">
-                    <div class="flex items-center justify-between bg-slate-950/70 border border-slate-700/80 rounded-xl px-3 py-2">
+                    <div class="flex items-center justify-between bg-slate-950/80 border border-amber-500/25 rounded-xl px-3.5 py-2.5">
                         <div>
-                            <p class="text-[11px] text-slate-400">Mã phòng của bạn</p>
-                            <p id="display-room-code" class="font-mono text-lg font-extrabold tracking-widest text-sky-400">------</p>
+                            <p class="text-[11px] text-slate-400">Mã phòng trực tuyến</p>
+                            <p id="display-room-code" class="font-mono text-xl font-extrabold tracking-widest text-amber-400">------</p>
                         </div>
-                        <button onclick="copyRoomCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-600 transition">
-                            Sao chép mã
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="copyRoomCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-600 transition">
+                                Copy Mã
+                            </button>
+                            <button id="btn-manual-sync" onclick="manualSyncRequest()" title="Đồng bộ lại bàn cờ" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-600 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <button onclick="copyInviteLink()" class="w-full py-2.5 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 text-xs font-bold flex items-center justify-center gap-2 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <button onclick="copyInviteLink()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-200 text-xs font-bold flex items-center justify-center gap-2 transition">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                         </svg>
-                        Sao Chép Link Mời Bạn Bè
+                        Sao Chép Link Mời Đối Thủ
                     </button>
                 </div>
 
                 <!-- Quick Start Prompt when no room is active -->
                 <div id="no-room-box" class="mt-2">
                     <p class="text-xs text-slate-300 mb-3 leading-relaxed">
-                        Tạo phòng trực tuyến để lấy link gửi cho bạn bè, hoặc chơi 2 người trên cùng một thiết bị.
+                        Đặt tên của bạn và tạo phòng trực tuyến để mời bạn bè, hoặc chơi 2 người trên cùng thiết bị.
                     </p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="createOnlineRoom()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold shadow-md transition">
+                        <button onclick="createOnlineRoom()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs font-extrabold shadow-md transition">
                             + Tạo Phòng Online
                         </button>
-                        <button onclick="startLocalGame()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition">
+                        <button onclick="openLocalSetupModal()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold transition">
                             Chơi Chung Máy
                         </button>
                     </div>
@@ -375,8 +431,8 @@
 
             <!-- Move History Card -->
             <div class="glass-panel rounded-2xl p-4 flex flex-col h-64 lg:h-72">
-                <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Lịch Sử Nước Đi</span>
+                <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800/90">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400/90">Biên Bản Trận Đấu</span>
                     <span id="move-count-label" class="text-xs font-mono text-slate-400">0 nước</span>
                 </div>
                 <div id="move-history-list" class="flex-1 overflow-y-auto space-y-1 pr-1 font-mono text-xs">
@@ -400,7 +456,7 @@
                         <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Cầu Hòa
+                        Xin Hòa
                     </button>
 
                     <button id="btn-resign" onclick="confirmResign()" class="py-2.5 px-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 border border-rose-800/60 text-rose-300 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition">
@@ -414,53 +470,153 @@
         </aside>
     </main>
 
-    <!-- Lobby / Connect Modal -->
-    <div id="lobby-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-slate-700/80 shadow-2xl relative">
+    <!-- Lobby / Player Name Modal -->
+    <div id="lobby-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-amber-500/30 shadow-2xl relative">
             <button onclick="closeLobbyModal()" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
 
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-lg shadow-sky-500/30 mb-3">
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 shadow-lg shadow-amber-500/30 mb-2.5">
                     <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 22H5v-2h14v2M17.16 8.26A4.96 4.96 0 0 0 18 5.5C18 3.57 16.43 2 14.5 2c-1.3 0-2.42.72-3 1.79A3.48 3.48 0 0 0 9.5 2C7.57 2 6 3.57 6 5.5c0 1.04.32 2 .84 2.76C5.15 9.54 4 11.63 4 14v4h16v-4c0-2.37-1.15-4.46-2.84-5.74Z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-extrabold text-white">Cờ Vua Trực Tuyến</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mt-1">Kết nối trực tiếp 2 người chơi không cần đăng nhập</p>
+                <h2 class="text-2xl font-extrabold text-amber-100">Cosmic Chess Royal</h2>
+                <p class="text-xs text-slate-400 mt-1">Đặt tên hiển thị và kết nối thi đấu 2 người trực tuyến</p>
             </div>
 
-            <div class="space-y-4">
+            <!-- Player Name Input (Saved in localStorage) -->
+            <div class="mb-4 p-3.5 rounded-2xl bg-slate-900/90 border border-amber-500/25">
+                <label for="input-player-name" class="block text-xs font-bold text-amber-300 uppercase tracking-wider mb-1.5">
+                    Tên Hiển Thị Của Bạn
+                </label>
+                <div class="flex gap-2">
+                    <input id="input-player-name" type="text" maxlength="20" placeholder="Nhập tên của bạn (VD: Minh)..."
+                        oninput="handlePlayerNameChange(this.value)"
+                        class="flex-1 bg-slate-950 border border-slate-700 focus:border-amber-400 focus:outline-none rounded-xl px-3.5 py-2 text-sm font-semibold text-white placeholder-slate-500">
+                    <button onclick="saveAndApplyName()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-amber-300 transition">
+                        Lưu Tên
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-3.5">
                 <!-- Option 1: Create Room -->
                 <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
-                    <h3 class="text-sm font-bold text-white mb-1">1. Tạo Phòng Mới (Cầm Quân Trắng)</h3>
-                    <p class="text-xs text-slate-400 mb-3">Tạo mã phòng và gửi đường dẫn cho bạn của bạn để bắt đầu.</p>
-                    <button onclick="createOnlineRoom()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-sky-500/25 transition">
+                    <h3 class="text-sm font-bold text-white mb-1">1. Tạo Phòng Mới (Quân Trắng)</h3>
+                    <p class="text-xs text-slate-400 mb-3">Tạo mã phòng 6 ký tự và gửi link cho bạn bè vào chơi.</p>
+                    <button onclick="createOnlineRoom()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition">
                         Tạo Phòng & Lấy Link Mời
                     </button>
                 </div>
 
                 <!-- Option 2: Join Room -->
                 <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
-                    <h3 class="text-sm font-bold text-white mb-1">2. Vào Phòng Bạn Bè (Cầm Quân Đen)</h3>
-                    <p class="text-xs text-slate-400 mb-3">Nhập mã phòng 6 ký tự được chia sẻ từ đối thủ.</p>
-                    <div class="flex gap-2">
-                        <input id="input-room-code" type="text" maxlength="6" placeholder="VD: A7X9K2" class="flex-1 bg-slate-950 border border-slate-700 focus:border-sky-500 focus:outline-none rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold uppercase tracking-widest text-white placeholder-slate-600">
-                        <button onclick="joinOnlineRoomFromInput()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition">
-                            Vào
+                    <h3 class="text-sm font-bold text-white mb-1">2. Nhập Mã Phòng Bạn Bè (Quân Đen)</h3>
+                    <div class="flex gap-2 mt-2">
+                        <input id="input-room-code" type="text" maxlength="6" placeholder="VD: K9M4X2"
+                            onkeydown="if(event.key==='Enter') joinOnlineRoomFromInput()"
+                            class="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-400 focus:outline-none rounded-xl px-3.5 py-2 text-sm font-mono font-bold uppercase tracking-widest text-white placeholder-slate-600">
+                        <button onclick="joinOnlineRoomFromInput()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition">
+                            Vào Phòng
                         </button>
                     </div>
                 </div>
 
                 <!-- Option 3: Local Pass & Play -->
                 <div class="pt-1 text-center">
-                    <button onclick="startLocalGame()" class="text-xs font-semibold text-slate-400 hover:text-sky-300 underline underline-offset-4 transition">
-                        Hoặc chơi 2 người trên cùng 1 thiết bị (Offline)
+                    <button onclick="openLocalSetupModal()" class="text-xs font-semibold text-slate-400 hover:text-amber-300 underline underline-offset-4 transition">
+                        Hoặc chơi 2 người trên cùng 1 máy (Offline)
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Name Setup Modal (Auto-opens on page entry) -->
+    <div id="welcome-name-modal" class="fixed inset-0 z-[60] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-amber-500/40 shadow-2xl">
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 shadow-lg shadow-amber-500/30 mb-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-amber-100">Chào Mừng Đến Với Cosmic Chess!</h2>
+                <p class="text-xs text-slate-400 mt-1">Hãy đặt tên hiển thị của bạn để bắt đầu thi đấu cùng bạn bè</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="welcome-name-input" class="block text-xs font-bold text-amber-300 uppercase tracking-wider mb-1.5">
+                        Tên Kỳ Thủ Của Bạn
+                    </label>
+                    <input id="welcome-name-input" type="text" maxlength="20" placeholder="Nhập tên của bạn (VD: Hoàng Tiến Minh)..."
+                        onkeydown="if(event.key==='Enter') confirmWelcomeName()"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 focus:outline-none rounded-xl px-4 py-3 text-sm font-bold text-white placeholder-slate-500">
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                    <button onclick="confirmWelcomeName()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition">
+                        Xác Nhận & Tiếp Tục
+                    </button>
+                    <button onclick="skipWelcomeName()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold text-xs transition">
+                        Bỏ Qua
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline 2-Player Name Setup Modal -->
+    <div id="local-setup-modal" class="hidden fixed inset-0 z-[55] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-amber-500/40 shadow-2xl relative">
+            <button onclick="closeLocalSetupModal()" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-800 border border-amber-500/40 text-amber-300 mb-2.5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold text-amber-100">Chơi 2 Người (Chung Thiết Bị)</h2>
+                <p class="text-xs text-slate-400 mt-1">Đặt tên riêng cho 2 kỳ thủ trước khi vào bàn đấu</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Player 1 (White) -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-500/25">
+                    <label for="local-p1-input" class="flex items-center gap-2 text-xs font-bold text-amber-200 uppercase tracking-wider mb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-amber-100 border border-slate-600 inline-block"></span>
+                        Người Chơi 1 (Quân Trắng)
+                    </label>
+                    <input id="local-p1-input" type="text" maxlength="20" placeholder="Tên Người Chơi 1..."
+                        onkeydown="if(event.key==='Enter') document.getElementById('local-p2-input').focus()"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 focus:outline-none rounded-xl px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500">
+                </div>
+
+                <!-- Player 2 (Black) -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-700">
+                    <label for="local-p2-input" class="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                        <span class="w-3 h-3 rounded-full bg-slate-800 border border-amber-400 inline-block"></span>
+                        Người Chơi 2 (Quân Đen)
+                    </label>
+                    <input id="local-p2-input" type="text" maxlength="20" placeholder="Tên Người Chơi 2..."
+                        onkeydown="if(event.key==='Enter') confirmLocalSetup()"
+                        class="w-full bg-slate-950 border border-slate-700 focus:border-amber-400 focus:outline-none rounded-xl px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500">
+                </div>
+
+                <button onclick="confirmLocalSetup()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 transition">
+                    Lưu Tên & Bắt Đầu Trận Đấu
+                </button>
             </div>
         </div>
     </div>
@@ -481,12 +637,13 @@
             function resize() {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
-                stars = Array.from({ length: Math.min(140, Math.floor((width * height) / 9000)) }, () => ({
+                stars = Array.from({ length: Math.min(150, Math.floor((width * height) / 8500)) }, () => ({
                     x: Math.random() * width,
                     y: Math.random() * height,
                     r: Math.random() * 1.6 + 0.3,
                     alpha: Math.random(),
-                    speed: Math.random() * 0.015 + 0.004
+                    speed: Math.random() * 0.014 + 0.004,
+                    gold: Math.random() > 0.78
                 }));
             }
 
@@ -497,7 +654,9 @@
                     if (s.alpha > 1 || s.alpha < 0.15) s.speed = -s.speed;
                     ctx.beginPath();
                     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(226, 232, 240, ${s.alpha.toFixed(2)})`;
+                    ctx.fillStyle = s.gold
+                        ? `rgba(251, 191, 36, ${(s.alpha * 0.85).toFixed(2)})`
+                        : `rgba(226, 232, 240, ${s.alpha.toFixed(2)})`;
                     ctx.fill();
                 }
                 requestAnimationFrame(draw);
@@ -509,94 +668,144 @@
         })();
 
         /*************************************************************************
-         * 2. WEB AUDIO SOUND EFFECTS (NO EXTERNAL MP3s NEEDED)
+         * 4. PLAYER PROFILE & NAME PERSISTENCE (ONLINE + OFFLINE 2-PLAYER)
          *************************************************************************/
-        let soundEnabled = true;
-        let audioCtx = null;
+        const STORAGE_NAME_KEY = 'cosmic_chess_player_name_v1';
+        const STORAGE_LOCAL_P1_KEY = 'cosmic_chess_local_p1_v1';
+        const STORAGE_LOCAL_P2_KEY = 'cosmic_chess_local_p2_v1';
 
-        function ensureAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let myName = localStorage.getItem(STORAGE_NAME_KEY) || 'Kỳ Thủ';
+        let opponentName = 'Đối Thủ';
+        let localPlayer1Name = localStorage.getItem(STORAGE_LOCAL_P1_KEY) || myName || 'Người Chơi 1';
+        let localPlayer2Name = localStorage.getItem(STORAGE_LOCAL_P2_KEY) || 'Người Chơi 2';
+        let pendingRoomFromUrl = null;
+
+        function getInitialLetter(name) {
+            const clean = (name || '').trim();
+            return clean ? clean.charAt(0).toUpperCase() : 'K';
+        }
+
+        function handlePlayerNameChange(val) {
+            const cleaned = val.trim().slice(0, 20);
+            myName = cleaned || 'Kỳ Thủ';
+            localStorage.setItem(STORAGE_NAME_KEY, myName);
+            updatePlayerBars();
+        }
+
+        function saveAndApplyName() {
+            const input = document.getElementById('input-player-name');
+            handlePlayerNameChange(input.value);
+            input.value = myName;
+            if (gameMode === 'online' && conn && conn.open) {
+                sendNetwork({ type: 'profile', name: myName });
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
+            showToast(`Đã lưu tên hiển thị: "${myName}"`, 'success');
+        }
+
+        // Welcome Name Modal Handlers (Runs automatically on entry)
+        function confirmWelcomeName() {
+            const input = document.getElementById('welcome-name-input');
+            const cleaned = input.value.trim().slice(0, 20);
+            if (cleaned) {
+                myName = cleaned;
+                localStorage.setItem(STORAGE_NAME_KEY, myName);
+                localPlayer1Name = cleaned;
+                localStorage.setItem(STORAGE_LOCAL_P1_KEY, localPlayer1Name);
+            }
+            document.getElementById('input-player-name').value = myName;
+            document.getElementById('welcome-name-modal').classList.add('hidden');
+            updatePlayerBars();
+
+            if (pendingRoomFromUrl) {
+                const code = pendingRoomFromUrl;
+                pendingRoomFromUrl = null;
+                joinOnlineRoom(code);
+            } else {
+                showToast(`Xin chào ${myName}! Chọn chế độ chơi để bắt đầu.`, 'success');
             }
         }
 
-        function playSound(type) {
-            if (!soundEnabled) return;
-            try {
-                ensureAudio();
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+        function skipWelcomeName() {
+            document.getElementById('input-player-name').value = myName;
+            document.getElementById('welcome-name-modal').classList.add('hidden');
+            updatePlayerBars();
 
-                if (type === 'move') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(240, now);
-                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
-                    gain.gain.setValueAtTime(0.18, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-                    osc.start(now);
-                    osc.stop(now + 0.09);
-                } else if (type === 'capture') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(180, now);
-                    osc.frequency.exponentialRampToValueAtTime(75, now + 0.14);
-                    gain.gain.setValueAtTime(0.24, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                } else if (type === 'check') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(580, now);
-                    osc.frequency.setValueAtTime(780, now + 0.09);
-                    gain.gain.setValueAtTime(0.22, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
-                } else if (type === 'gameover') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(440, now);
-                    osc.frequency.setValueAtTime(554, now + 0.12);
-                    osc.frequency.setValueAtTime(659, now + 0.24);
-                    gain.gain.setValueAtTime(0.22, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-                    osc.start(now);
-                    osc.stop(now + 0.55);
+            if (pendingRoomFromUrl) {
+                const code = pendingRoomFromUrl;
+                pendingRoomFromUrl = null;
+                joinOnlineRoom(code);
+            }
+        }
+
+        // Offline 2-Player Name Setup Modal Handlers
+        function openLocalSetupModal() {
+            closeLobbyModal();
+            document.getElementById('local-p1-input').value = localPlayer1Name || myName || 'Người Chơi 1';
+            document.getElementById('local-p2-input').value = localPlayer2Name || 'Người Chơi 2';
+            document.getElementById('local-setup-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('local-p1-input').focus(), 60);
+        }
+
+        function closeLocalSetupModal() {
+            document.getElementById('local-setup-modal').classList.add('hidden');
+        }
+
+        function confirmLocalSetup() {
+            const p1Val = document.getElementById('local-p1-input').value.trim().slice(0, 20);
+            const p2Val = document.getElementById('local-p2-input').value.trim().slice(0, 20);
+
+            localPlayer1Name = p1Val || 'Người Chơi 1';
+            localPlayer2Name = p2Val || 'Người Chơi 2';
+
+            localStorage.setItem(STORAGE_LOCAL_P1_KEY, localPlayer1Name);
+            localStorage.setItem(STORAGE_LOCAL_P2_KEY, localPlayer2Name);
+
+            closeLocalSetupModal();
+
+            if (gameMode === 'local') {
+                // If already in a local match, just update names seamlessly without resetting board
+                updatePlayerBars();
+                showToast(`Đã cập nhật tên: ${localPlayer1Name} vs ${localPlayer2Name}`, 'success');
+            } else {
+                startLocalGame();
+            }
+        }
+
+        // Click on player name bar to edit name directly
+        function handlePlayerBarNameClick(position) {
+            if (gameMode === 'local') {
+                openLocalSetupModal();
+                const targetColor = position === 'top' ? (boardFlipped ? 'w' : 'b') : (boardFlipped ? 'b' : 'w');
+                setTimeout(() => {
+                    const el = document.getElementById(targetColor === 'w' ? 'local-p1-input' : 'local-p2-input');
+                    if (el) { el.focus(); el.select(); }
+                }, 80);
+                return;
+            }
+
+            if (gameMode === 'online') {
+                const targetColor = position === 'top' ? (boardFlipped ? 'w' : 'b') : (boardFlipped ? 'b' : 'w');
+                if (targetColor === myColor) {
+                    openLobbyModal();
+                    setTimeout(() => {
+                        const el = document.getElementById('input-player-name');
+                        if (el) { el.focus(); el.select(); }
+                    }, 80);
+                } else {
+                    showToast(`Bạn không thể đổi tên của ${opponentName}.`, 'info');
                 }
-            } catch (e) { /* Ignore audio restrictions */ }
-        }
+                return;
+            }
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('icon-sound-on').classList.toggle('hidden', !soundEnabled);
-            document.getElementById('icon-sound-off').classList.toggle('hidden', soundEnabled);
-            showToast(soundEnabled ? 'Đã bật âm thanh' : 'Đã tắt âm thanh', 'info');
+            openLobbyModal();
+            setTimeout(() => {
+                const el = document.getElementById('input-player-name');
+                if (el) { el.focus(); el.select(); }
+            }, 80);
         }
 
         /*************************************************************************
-         * 3. CRISP SVG CHESS PIECES (WIKIMEDIA / STANDARD TOURNAMENT VECTOR)
-         *************************************************************************/
-        const PIECE_SVGS = {
-            wK: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6M20 8h5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#ffffff" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#ffffff"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/></g></svg>`,
-            wQ: `<svg viewBox="0 0 45 45" class="piece"><g fill="#ffffff" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zm16.5-4.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0" fill="none"/></g></svg>`,
-            wR: `<svg viewBox="0 0 45 45" class="piece"><g fill="#ffffff" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9v3zm3-3v-4h21v4H12zm-1-22V9h4v2h5V9h5v2h5V9h4v5" stroke-linecap="butt"/><path d="M34 14l-3 3H14l-3-3"/><path d="M31 17v12.5H14V17" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M31 29.5l1.5 2.5h-20l1.5-2.5"/><path d="M11 14h23" fill="none" stroke-linejoin="miter"/></g></svg>`,
-            wB: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><g fill="#ffffff" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke-linejoin="miter"/></g></svg>`,
-            wN: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" fill="#ffffff"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" fill="#ffffff"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" fill="#0f172a"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" fill="#0f172a"/></g></svg>`,
-            wP: `<svg viewBox="0 0 45 45" class="piece"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-            bK: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" fill="#0f172a" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10V37z" fill="#0f172a"/><path d="M20 8h5" stroke-linejoin="miter"/><path d="M32 29.5s8.5-4 6.03-9.65C34.15 14 25 18 22.5 24.5l.01 2.1-.01-2.1C20 18 9.906 14 6.997 19.85c-2.497 5.65 4.853 9 4.853 9" stroke="#e2e8f0"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" stroke="#e2e8f0"/></g></svg>`,
-            bQ: `<svg viewBox="0 0 45 45" class="piece"><g fill="#0f172a" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><g stroke="none"><circle cx="6" cy="12" r="2.75"/><circle cx="14" cy="9" r="2.75"/><circle cx="22.5" cy="8" r="2.75"/><circle cx="31" cy="9" r="2.75"/><circle cx="39" cy="12" r="2.75"/></g><path d="M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5 9 26z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11 38.5a35 35 1 0 0 23 0" fill="none" stroke-linecap="butt"/><path d="M11 29a35 35 1 0 1 23 0M12.5 31.5h20M11.5 34.5a35 35 1 0 0 22 0M10.5 37.5a35 35 1 0 0 24 0" fill="none" stroke="#e2e8f0"/></g></svg>`,
-            bR: `<svg viewBox="0 0 45 45" class="piece"><g fill="#0f172a" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9v3zm3.5-7l1.5-2.5h17l1.5 2.5h-20zm-.5 4v-4h21v4H12z" stroke-linecap="butt"/><path d="M14 29.5v-13h17v13H14z" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M14 16.5L11 14h23l-3 2.5H14zM11 14V9h4v2h5V9h5v2h5V9h4v5H11z" stroke-linecap="butt"/><path d="M12 35.5h21M13 31.5h19M14 29.5h17M14 16.5h17M11 14h23" fill="none" stroke="#e2e8f0" stroke-width="1.1" stroke-linejoin="miter"/></g></svg>`,
-            bB: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><g fill="#0f172a" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" stroke="#e2e8f0" stroke-linejoin="miter"/></g></svg>`,
-            bN: `<svg viewBox="0 0 45 45" class="piece"><g fill="none" fill-rule="evenodd" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" fill="#0f172a"/><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" fill="#0f172a"/><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5,25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" fill="#e2e8f0" stroke="#e2e8f0"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14,15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" fill="#e2e8f0" stroke="#e2e8f0"/></g></svg>`,
-            bP: `<svg viewBox="0 0 45 45" class="piece"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#0f172a" stroke="#0f172a" stroke-width="1.6" stroke-linecap="round"/></svg>`
-        };
-
-        /*************************************************************************
-         * 4. CHESS STATE & MULTIPLAYER ENGINE (CHESS.JS + PEERJS)
+         * 5. CHESS STATE & OPTIMIZED MULTIPLAYER ENGINE (ICE/STUN + HEARTBEAT)
          *************************************************************************/
         const chess = new Chess();
         let gameMode = 'idle'; // 'idle' | 'online' | 'local'
@@ -608,16 +817,32 @@
         let pendingPromotion = null;
         let isGameOver = false;
 
-        // PeerJS state
+        // PeerJS & Connection Stability State
         let peer = null;
         let conn = null;
         let roomCode = '';
-        const PEER_PREFIX = 'htm-cosmic-chess-v1-';
+        let heartbeatTimer = null;
+        let reconnectTimer = null;
+        let lastPongTime = 0;
+        const PEER_PREFIX = 'htm-cosmic-royal-v2-';
+
+        // Multi-provider STUN servers for fast NAT traversal across Wi-Fi / 4G / 5G
+        const PEER_CONFIG = {
+            debug: 1,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun.cloudflare.com:3478' }
+                ],
+                iceCandidatePoolSize: 10
+            }
+        };
 
         const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
-        // Generate 6-char uppercase alphanumeric Room ID
         function generateRoomCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
@@ -627,17 +852,70 @@
             return code;
         }
 
-        function setConnectionStatus(state, text) {
+        function setConnectionStatus(state, text, pingMs = null) {
             const dot = document.getElementById('status-dot');
             const label = document.getElementById('status-text');
+            const pingBadge = document.getElementById('ping-badge');
+
             label.textContent = text;
             dot.className = 'w-2.5 h-2.5 rounded-full ';
-            if (state === 'connected') dot.className += 'bg-emerald-400 shadow-[0_0_8px_#34d399]';
-            else if (state === 'waiting') dot.className += 'bg-amber-400 animate-pulse';
-            else dot.className += 'bg-rose-400';
+            if (state === 'connected') {
+                dot.className += 'bg-emerald-400 shadow-[0_0_8px_#34d399]';
+            } else if (state === 'waiting') {
+                dot.className += 'bg-amber-400 animate-pulse';
+            } else {
+                dot.className += 'bg-rose-400';
+            }
+
+            if (pingMs !== null && state === 'connected') {
+                pingBadge.classList.remove('hidden');
+                pingBadge.textContent = `${pingMs} ms`;
+                if (pingMs < 120) {
+                    pingBadge.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+                } else if (pingMs < 280) {
+                    pingBadge.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30';
+                } else {
+                    pingBadge.className = 'font-mono text-[11px] px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30';
+                }
+            } else {
+                pingBadge.classList.add('hidden');
+            }
+        }
+
+        function stopHeartbeat() {
+            if (heartbeatTimer) {
+                clearInterval(heartbeatTimer);
+                heartbeatTimer = null;
+            }
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        }
+
+        function startHeartbeat() {
+            stopHeartbeat();
+            lastPongTime = Date.now();
+            heartbeatTimer = setInterval(() => {
+                if (gameMode !== 'online' || !conn || !conn.open) return;
+
+                // Send ping with timestamp
+                try {
+                    conn.send({ type: 'ping', ts: Date.now() });
+                } catch (e) {}
+
+                // Check if opponent went silent for > 10s
+                if (Date.now() - lastPongTime > 10000) {
+                    setConnectionStatus('waiting', 'Mạng yếu, đang đồng bộ lại...');
+                    if (myColor === 'b' && roomCode) {
+                        attemptGuestReconnect();
+                    }
+                }
+            }, 3000);
         }
 
         function cleanupPeer() {
+            stopHeartbeat();
             if (conn) {
                 try { conn.close(); } catch (e) {}
                 conn = null;
@@ -650,30 +928,31 @@
 
         // HOST: Create Online Room (Plays White)
         function createOnlineRoom() {
+            saveAndApplyNameSilent();
             cleanupPeer();
             closeLobbyModal();
             gameMode = 'online';
             myColor = 'w';
+            opponentName = 'Đang chờ đối thủ...';
             boardFlipped = false;
             resetBoardState();
 
             roomCode = generateRoomCode();
             setConnectionStatus('waiting', 'Đang khởi tạo phòng...');
-            document.getElementById('game-mode-badge').textContent = 'Online • Bạn cầm Trắng';
+            document.getElementById('game-mode-badge').textContent = 'Online • Quân Trắng';
             document.getElementById('no-room-box').classList.add('hidden');
             document.getElementById('room-share-box').classList.remove('hidden');
             document.getElementById('display-room-code').textContent = roomCode;
 
-            // Update URL query without reloading so user can copy address bar too
             const url = new URL(window.location.href);
             url.searchParams.set('room', roomCode);
             window.history.replaceState({}, '', url);
 
-            peer = new Peer(PEER_PREFIX + roomCode, { debug: 1 });
+            peer = new Peer(PEER_PREFIX + roomCode, PEER_CONFIG);
 
             peer.on('open', () => {
-                setConnectionStatus('waiting', `Phòng ${roomCode} • Đang chờ đối thủ...`);
-                showToast(`Đã tạo phòng ${roomCode}! Hãy gửi link cho bạn bè.`, 'success');
+                setConnectionStatus('waiting', `Phòng ${roomCode} • Chờ đối thủ`);
+                showToast(`Đã tạo phòng ${roomCode}! Hãy gửi link cho đối thủ.`, 'success');
                 updatePlayerBars();
             });
 
@@ -689,15 +968,22 @@
                 setupConnectionHandlers();
             });
 
+            peer.on('disconnected', () => {
+                if (peer && !peer.destroyed) {
+                    peer.reconnect();
+                }
+            });
+
             peer.on('error', (err) => {
-                console.error(err);
-                setConnectionStatus('error', 'Lỗi kết nối mạng P2P');
-                showToast('Không thể tạo phòng lúc này. Vui lòng thử lại.', 'error');
+                console.error('Peer error:', err);
+                setConnectionStatus('error', 'Lỗi kết nối P2P');
+                showToast('Kết nối gặp sự cố. Đang thử khôi phục...', 'error');
             });
         }
 
         // GUEST: Join Online Room (Plays Black)
         function joinOnlineRoom(targetCode) {
+            saveAndApplyNameSilent();
             const cleanCode = (targetCode || '').trim().toUpperCase();
             if (cleanCode.length < 4) {
                 showToast('Vui lòng nhập mã phòng hợp lệ!', 'error');
@@ -708,28 +994,44 @@
             closeLobbyModal();
             gameMode = 'online';
             myColor = 'b';
+            opponentName = 'Chủ phòng';
             boardFlipped = true;
             roomCode = cleanCode;
             resetBoardState();
 
-            setConnectionStatus('waiting', `Đang kết nối phòng ${roomCode}...`);
-            document.getElementById('game-mode-badge').textContent = 'Online • Bạn cầm Đen';
+            setConnectionStatus('waiting', `Đang kết nối ${roomCode}...`);
+            document.getElementById('game-mode-badge').textContent = 'Online • Quân Đen';
             document.getElementById('no-room-box').classList.add('hidden');
             document.getElementById('room-share-box').classList.remove('hidden');
             document.getElementById('display-room-code').textContent = roomCode;
 
-            peer = new Peer({ debug: 1 });
+            peer = new Peer(PEER_CONFIG);
 
             peer.on('open', () => {
                 conn = peer.connect(PEER_PREFIX + roomCode, { reliable: true });
                 setupConnectionHandlers();
             });
 
-            peer.on('error', (err) => {
-                console.error(err);
-                setConnectionStatus('error', 'Không tìm thấy phòng');
-                showToast(`Không tìm thấy phòng ${roomCode}. Kiểm tra lại mã phòng!`, 'error');
+            peer.on('disconnected', () => {
+                if (peer && !peer.destroyed) {
+                    peer.reconnect();
+                }
             });
+
+            peer.on('error', (err) => {
+                console.error('Peer error:', err);
+                setConnectionStatus('error', 'Không tìm thấy phòng');
+                showToast(`Không tìm thấy phòng ${roomCode}. Hãy kiểm tra lại mã!`, 'error');
+            });
+        }
+
+        function attemptGuestReconnect() {
+            if (gameMode !== 'online' || myColor !== 'b' || !peer || peer.destroyed) return;
+            try {
+                if (conn) conn.close();
+                conn = peer.connect(PEER_PREFIX + roomCode, { reliable: true });
+                setupConnectionHandlers();
+            } catch (e) {}
         }
 
         function joinOnlineRoomFromInput() {
@@ -737,24 +1039,74 @@
             joinOnlineRoom(val);
         }
 
+        function saveAndApplyNameSilent() {
+            const input = document.getElementById('input-player-name');
+            if (input) {
+                const cleaned = input.value.trim().slice(0, 20);
+                myName = cleaned || 'Kỳ Thủ';
+                localStorage.setItem(STORAGE_NAME_KEY, myName);
+            }
+        }
+
         function setupConnectionHandlers() {
             conn.on('open', () => {
-                setConnectionStatus('connected', `Đã kết nối • Phòng ${roomCode}`);
+                lastPongTime = Date.now();
+                setConnectionStatus('connected', `Phòng ${roomCode}`);
+                startHeartbeat();
                 playSound('check');
-                showToast('Đối thủ đã vào phòng! Trận đấu bắt đầu.', 'success');
+
+                // Exchange names immediately
+                conn.send({ type: 'profile', name: myName });
+
+                // Host sends full state for instant sync (supports mid-game reconnect)
+                if (myColor === 'w') {
+                    conn.send({
+                        type: 'sync',
+                        fen: chess.fen(),
+                        history: chess.history({ verbose: true }),
+                        hostName: myName
+                    });
+                } else {
+                    conn.send({ type: 'request_sync' });
+                }
+
                 updatePlayerBars();
                 renderBoard();
-
-                // Host sends current state in case guest reconnected
-                if (myColor === 'w') {
-                    conn.send({ type: 'sync', fen: chess.fen(), history: chess.history({ verbose: true }) });
-                }
             });
 
             conn.on('data', (data) => {
                 if (!data || !data.type) return;
+                lastPongTime = Date.now();
 
                 switch (data.type) {
+                    case 'ping':
+                        sendNetwork({ type: 'pong', ts: data.ts });
+                        break;
+
+                    case 'pong':
+                        if (data.ts) {
+                            const rtt = Math.max(1, Date.now() - data.ts);
+                            setConnectionStatus('connected', `Phòng ${roomCode}`, rtt);
+                        }
+                        break;
+
+                    case 'profile':
+                        if (data.name && data.name !== opponentName) {
+                            opponentName = data.name;
+                            updatePlayerBars();
+                            showToast(`${opponentName} đã sẵn sàng thi đấu!`, 'success');
+                        }
+                        break;
+
+                    case 'request_sync':
+                        sendNetwork({
+                            type: 'sync',
+                            fen: chess.fen(),
+                            history: chess.history({ verbose: true }),
+                            hostName: myName
+                        });
+                        break;
+
                     case 'full':
                         showToast('Phòng này đã đủ 2 người chơi!', 'error');
                         cleanupPeer();
@@ -762,16 +1114,21 @@
                         break;
 
                     case 'move':
-                        applyMoveFromNetwork(data.move);
+                        applyMoveFromNetwork(data.move, data.fen);
                         break;
 
                     case 'sync':
-                        chess.load(data.fen);
-                        if (data.history && data.history.length > 0) {
-                            const last = data.history[data.history.length - 1];
-                            lastMove = { from: last.from, to: last.to };
+                        if (data.hostName) opponentName = data.hostName;
+                        if (data.fen && data.fen !== chess.fen()) {
+                            chess.load(data.fen);
+                            if (data.history && data.history.length > 0) {
+                                const last = data.history[data.history.length - 1];
+                                lastMove = { from: last.from, to: last.to };
+                            }
+                            renderAll();
+                        } else {
+                            updatePlayerBars();
                         }
-                        renderAll();
                         break;
 
                     case 'resign':
@@ -780,11 +1137,11 @@
 
                     case 'draw_offer':
                         showInteractiveToast(
-                            'Đối thủ muốn xin hòa ván này. Bạn có đồng ý không?',
+                            `${opponentName} muốn xin hòa ván này. Bạn đồng ý chứ?`,
                             'Đồng Ý Hòa',
                             () => {
                                 sendNetwork({ type: 'draw_accept' });
-                                endGame('Hòa Cờ!', 'Hai bên đã đồng ý hòa', '🤝');
+                                endGame('Hòa Cờ!', 'Hai kỳ thủ đã đồng ý hòa', '🤝');
                             },
                             'Từ Chối',
                             () => sendNetwork({ type: 'draw_decline' })
@@ -792,16 +1149,16 @@
                         break;
 
                     case 'draw_accept':
-                        endGame('Hòa Cờ!', 'Đối thủ đã chấp nhận lời cầu hòa', '🤝');
+                        endGame('Hòa Cờ!', `${opponentName} đã chấp nhận lời xin hòa`, '🤝');
                         break;
 
                     case 'draw_decline':
-                        showToast('Đối thủ đã từ chối lời cầu hòa.', 'info');
+                        showToast(`${opponentName} đã từ chối lời xin hòa.`, 'info');
                         break;
 
                     case 'rematch_request':
                         showInteractiveToast(
-                            'Đối thủ muốn chơi một ván mới (đổi màu quân)!',
+                            `${opponentName} mời bạn đấu ván mới (đổi màu quân)!`,
                             'Chấp Nhận',
                             () => {
                                 myColor = myColor === 'w' ? 'b' : 'w';
@@ -819,20 +1176,33 @@
                         myColor = myColor === 'w' ? 'b' : 'w';
                         boardFlipped = (myColor === 'b');
                         resetBoardState();
-                        showToast('Đối thủ đồng ý tái đấu! Ván mới bắt đầu.', 'success');
+                        showToast(`${opponentName} đồng ý tái đấu! Ván mới bắt đầu.`, 'success');
                         break;
                 }
             });
 
             conn.on('close', () => {
-                setConnectionStatus('error', 'Đối thủ đã ngắt kết nối');
-                showToast('Đối thủ đã rời khỏi phòng.', 'error');
+                stopHeartbeat();
+                setConnectionStatus('waiting', 'Đối thủ mất kết nối...');
+                showToast(`${opponentName} tạm mất kết nối. Đang chờ kết nối lại...`, 'error');
+                if (myColor === 'b') {
+                    reconnectTimer = setTimeout(attemptGuestReconnect, 2500);
+                }
             });
+        }
+
+        function manualSyncRequest() {
+            if (gameMode === 'online' && conn && conn.open) {
+                sendNetwork({ type: 'request_sync' });
+                showToast('Đang đồng bộ lại trạng thái bàn cờ...', 'info');
+            }
         }
 
         function sendNetwork(payload) {
             if (gameMode === 'online' && conn && conn.open) {
-                conn.send(payload);
+                try {
+                    conn.send(payload);
+                } catch (e) {}
             }
         }
 
@@ -840,13 +1210,14 @@
         function startLocalGame() {
             cleanupPeer();
             closeLobbyModal();
+            closeLocalSetupModal();
             gameMode = 'local';
             myColor = 'w';
             boardFlipped = false;
             resetBoardState();
 
             setConnectionStatus('connected', 'Chơi 2 người trên 1 máy');
-            document.getElementById('game-mode-badge').textContent = 'Offline • Chung thiết bị';
+            document.getElementById('game-mode-badge').textContent = 'Offline • Chung máy';
             document.getElementById('room-share-box').classList.add('hidden');
             document.getElementById('no-room-box').classList.remove('hidden');
 
@@ -854,11 +1225,11 @@
             url.searchParams.delete('room');
             window.history.replaceState({}, '', url);
 
-            showToast('Bắt đầu chế độ 2 người chơi chung thiết bị!', 'success');
+            showToast(`${localPlayer1Name} (Trắng) vs ${localPlayer2Name} (Đen)!`, 'success');
         }
 
         /*************************************************************************
-         * 5. CHESS GAMEPLAY & BOARD RENDERING
+         * 6. CHESS GAMEPLAY & BOARD RENDERING
          *************************************************************************/
         function resetBoardState() {
             chess.reset();
@@ -887,7 +1258,7 @@
             const displayRanks = boardFlipped ? [...RANKS].reverse() : RANKS;
             const displayFiles = boardFlipped ? [...FILES].reverse() : FILES;
 
-            // Find king in check if any
+            // Find king in check
             let checkedKingSquare = null;
             if (chess.in_check()) {
                 const turnColor = chess.turn();
@@ -923,7 +1294,7 @@
                         sqDiv.classList.add('in-check');
                     }
 
-                    // Coordinate Labels on edge squares
+                    // Coordinate Labels
                     if (fIdx === 0) {
                         const rankLabel = document.createElement('span');
                         rankLabel.className = 'coord-rank';
@@ -967,22 +1338,19 @@
         function handleSquareClick(sqName) {
             if (isGameOver) return;
 
-            // Enforce turn restrictions in Online mode
             if (gameMode === 'online') {
                 if (!conn || !conn.open) {
                     showToast('Đang chờ đối thủ kết nối vào phòng...', 'info');
                     return;
                 }
                 if (chess.turn() !== myColor) {
-                    showToast('Chưa tới lượt của bạn!', 'info');
+                    showToast(`Đang là lượt của ${opponentName}!`, 'info');
                     return;
                 }
             }
 
-            // Check if clicked square is a legal move target
             const targetMove = legalMovesForSelected.find(m => m.to === sqName);
             if (targetMove) {
-                // Check Pawn Promotion
                 if (targetMove.flags.includes('p')) {
                     openPromotionDialog(targetMove.from, targetMove.to);
                     return;
@@ -991,7 +1359,6 @@
                 return;
             }
 
-            // Otherwise select own piece
             const piece = chess.get(sqName);
             if (piece && piece.color === chess.turn()) {
                 if (gameMode === 'online' && piece.color !== myColor) return;
@@ -1014,7 +1381,7 @@
 
             choices.forEach(type => {
                 const btn = document.createElement('button');
-                btn.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-slate-800 hover:bg-sky-600/40 border border-slate-600 hover:border-sky-400 flex items-center justify-center transition transform hover:scale-105';
+                btn.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-slate-800 hover:bg-amber-500/30 border border-slate-600 hover:border-amber-400 flex items-center justify-center transition transform hover:scale-105';
                 btn.innerHTML = PIECE_SVGS[turn + type.toUpperCase()];
                 btn.onclick = () => {
                     document.getElementById('promotion-modal').classList.add('hidden');
@@ -1038,21 +1405,21 @@
             triggerMoveAudio(moveResult);
             renderAll();
 
-            // Sync move to opponent if online
             if (gameMode === 'online') {
-                sendNetwork({ type: 'move', move: moveObj });
+                sendNetwork({ type: 'move', move: moveObj, fen: chess.fen() });
             }
         }
 
-        function applyMoveFromNetwork(moveObj) {
+        function applyMoveFromNetwork(moveObj, remoteFen) {
             const moveResult = chess.move(moveObj);
-            if (!moveResult) return;
-
+            if (!moveResult) {
+                if (remoteFen) chess.load(remoteFen);
+            }
             selectedSquare = null;
             legalMovesForSelected = [];
-            lastMove = { from: moveResult.from, to: moveResult.to };
+            lastMove = { from: moveObj.from, to: moveObj.to };
 
-            triggerMoveAudio(moveResult);
+            if (moveResult) triggerMoveAudio(moveResult);
             renderAll();
         }
 
@@ -1076,7 +1443,12 @@
                 const winnerText = winnerColor === 'w' ? 'Quân Trắng thắng!' : 'Quân Đen thắng!';
                 let sub = `Chiếu bí • ${winnerText}`;
                 if (gameMode === 'online') {
-                    sub = winnerColor === myColor ? 'Chúc mừng! Bạn đã chiến thắng!' : 'Bạn đã bị chiếu bí!';
+                    sub = winnerColor === myColor
+                        ? `Chúc mừng ${myName}! Bạn đã chiếu bí ${opponentName}!`
+                        : `${opponentName} đã chiếu bí bạn!`;
+                } else if (gameMode === 'local') {
+                    const localWinner = winnerColor === 'w' ? localPlayer1Name : localPlayer2Name;
+                    sub = `Chúc mừng ${localWinner}! Chiếu bí đối phương.`;
                 }
                 endGame('Chiếu Bí!', sub, '🏆');
             } else if (chess.in_stalemate()) {
@@ -1104,7 +1476,7 @@
         }
 
         /*************************************************************************
-         * 6. UI UPDATES: PLAYER BARS, CAPTURED PIECES & MOVE HISTORY
+         * 7. UI UPDATES: PLAYER BARS, CAPTURED PIECES & MOVE HISTORY
          *************************************************************************/
         function updatePlayerBars() {
             const topColor = boardFlipped ? 'w' : 'b';
@@ -1113,30 +1485,57 @@
 
             const topNameEl = document.getElementById('top-player-name');
             const bottomNameEl = document.getElementById('bottom-player-name');
+            const topColorBadge = document.getElementById('top-color-badge');
+            const bottomColorBadge = document.getElementById('bottom-color-badge');
             const topAvatar = document.getElementById('top-avatar');
             const bottomAvatar = document.getElementById('bottom-avatar');
 
-            // Avatars
-            topAvatar.textContent = topColor === 'w' ? '♙' : '♟';
-            topAvatar.className = topColor === 'w'
-                ? 'w-9 h-9 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-bold text-base text-slate-900'
-                : 'w-9 h-9 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center font-bold text-base text-slate-200';
+            let topDisplayName = '';
+            let bottomDisplayName = '';
 
-            bottomAvatar.textContent = bottomColor === 'w' ? '♙' : '♟';
-            bottomAvatar.className = bottomColor === 'w'
-                ? 'w-9 h-9 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-bold text-base text-slate-900'
-                : 'w-9 h-9 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center font-bold text-base text-slate-200';
-
-            // Names
             if (gameMode === 'online') {
-                const myLabel = myColor === 'w' ? 'Bạn (Trắng)' : 'Bạn (Đen)';
-                const oppLabel = myColor === 'w' ? 'Đối thủ (Đen)' : 'Đối thủ (Trắng)';
-                bottomNameEl.textContent = bottomColor === myColor ? myLabel : oppLabel;
-                topNameEl.textContent = topColor === myColor ? myLabel : oppLabel;
+                const myLabel = `${myName} (Bạn)`;
+                const oppLabel = opponentName;
+                bottomDisplayName = bottomColor === myColor ? myLabel : oppLabel;
+                topDisplayName = topColor === myColor ? myLabel : oppLabel;
+            } else if (gameMode === 'local') {
+                bottomDisplayName = bottomColor === 'w' ? localPlayer1Name : localPlayer2Name;
+                topDisplayName = topColor === 'w' ? localPlayer1Name : localPlayer2Name;
             } else {
-                bottomNameEl.textContent = bottomColor === 'w' ? 'Người chơi 1 (Trắng)' : 'Người chơi 2 (Đen)';
-                topNameEl.textContent = topColor === 'w' ? 'Người chơi 1 (Trắng)' : 'Người chơi 2 (Đen)';
+                bottomDisplayName = `${myName} (Bạn)`;
+                topDisplayName = 'Đang chờ đối thủ...';
             }
+
+            topNameEl.textContent = topDisplayName;
+            bottomNameEl.textContent = bottomDisplayName;
+
+            // Show/hide edit pencil icon depending on whether that bar is editable
+            const topEditIcon = document.getElementById('top-edit-icon');
+            const bottomEditIcon = document.getElementById('bottom-edit-icon');
+            if (gameMode === 'online') {
+                topEditIcon.classList.toggle('hidden', topColor !== myColor);
+                bottomEditIcon.classList.toggle('hidden', bottomColor !== myColor);
+            } else if (gameMode === 'local') {
+                topEditIcon.classList.remove('hidden');
+                bottomEditIcon.classList.remove('hidden');
+            } else {
+                topEditIcon.classList.add('hidden');
+                bottomEditIcon.classList.remove('hidden');
+            }
+
+            topColorBadge.textContent = topColor === 'w' ? 'Quân Trắng' : 'Quân Đen';
+            bottomColorBadge.textContent = bottomColor === 'w' ? 'Quân Trắng' : 'Quân Đen';
+
+            // Avatars with Initial Letter
+            topAvatar.textContent = getInitialLetter(topDisplayName);
+            topAvatar.className = topColor === 'w'
+                ? 'w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
+                : 'w-10 h-10 rounded-xl bg-slate-800 border border-amber-500/40 flex items-center justify-center font-extrabold text-sm text-amber-300 shadow-inner';
+
+            bottomAvatar.textContent = getInitialLetter(bottomDisplayName);
+            bottomAvatar.className = bottomColor === 'w'
+                ? 'w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
+                : 'w-10 h-10 rounded-xl bg-slate-800 border border-amber-500/40 flex items-center justify-center font-extrabold text-sm text-amber-300 shadow-inner';
 
             // Turn Badges & Glow
             const topTurnTag = document.getElementById('top-turn-tag');
@@ -1147,19 +1546,19 @@
             if (currentTurn === topColor && !isGameOver) {
                 topTurnTag.classList.remove('hidden');
                 topTurnTag.textContent = (gameMode === 'online' && topColor === myColor) ? 'Lượt của bạn' : 'Đang đi';
-                topBar.classList.add('active-turn-badge', 'border-sky-500/50');
+                topBar.classList.add('active-turn-badge');
             } else {
                 topTurnTag.classList.add('hidden');
-                topBar.classList.remove('active-turn-badge', 'border-sky-500/50');
+                topBar.classList.remove('active-turn-badge');
             }
 
             if (currentTurn === bottomColor && !isGameOver) {
                 bottomTurnTag.classList.remove('hidden');
                 bottomTurnTag.textContent = (gameMode === 'online' && bottomColor === myColor) ? 'Lượt của bạn' : 'Đang đi';
-                bottomBar.classList.add('active-turn-badge', 'border-sky-500/50');
+                bottomBar.classList.add('active-turn-badge');
             } else {
                 bottomTurnTag.classList.add('hidden');
-                bottomBar.classList.remove('active-turn-badge', 'border-sky-500/50');
+                bottomBar.classList.remove('active-turn-badge');
             }
         }
 
@@ -1188,8 +1587,8 @@
 
             let whiteScore = 0;
             let blackScore = 0;
-            let capturedByWhite = ''; // Black pieces captured by White
-            let capturedByBlack = ''; // White pieces captured by Black
+            let capturedByWhite = '';
+            let capturedByBlack = '';
 
             for (const type of ['q', 'r', 'b', 'n', 'p']) {
                 whiteScore += currentCounts.w[type] * values[type];
@@ -1211,15 +1610,25 @@
             const diff = whiteScore - blackScore;
             const topAdvEl = document.getElementById('top-advantage');
             const bottomAdvEl = document.getElementById('bottom-advantage');
-            topAdvEl.textContent = '';
-            bottomAdvEl.textContent = '';
+            topAdvEl.classList.add('hidden');
+            bottomAdvEl.classList.add('hidden');
 
             if (diff > 0) {
-                if (topColor === 'w') topAdvEl.textContent = `+${diff}`;
-                else bottomAdvEl.textContent = `+${diff}`;
+                if (topColor === 'w') {
+                    topAdvEl.textContent = `+${diff}`;
+                    topAdvEl.classList.remove('hidden');
+                } else {
+                    bottomAdvEl.textContent = `+${diff}`;
+                    bottomAdvEl.classList.remove('hidden');
+                }
             } else if (diff < 0) {
-                if (topColor === 'b') topAdvEl.textContent = `+${Math.abs(diff)}`;
-                else bottomAdvEl.textContent = `+${Math.abs(diff)}`;
+                if (topColor === 'b') {
+                    topAdvEl.textContent = `+${Math.abs(diff)}`;
+                    topAdvEl.classList.remove('hidden');
+                } else {
+                    bottomAdvEl.textContent = `+${Math.abs(diff)}`;
+                    bottomAdvEl.classList.remove('hidden');
+                }
             }
         }
 
@@ -1241,7 +1650,7 @@
                 const isLastRow = (i + 2 >= history.length);
 
                 html += `
-                    <div class="grid grid-cols-12 items-center px-2.5 py-1.5 rounded-lg ${isLastRow ? 'bg-sky-500/15 text-sky-200' : 'hover:bg-slate-800/50 text-slate-300'}">
+                    <div class="grid grid-cols-12 items-center px-2.5 py-1.5 rounded-lg ${isLastRow ? 'bg-amber-500/15 text-amber-200 border border-amber-500/20' : 'hover:bg-slate-800/50 text-slate-300'}">
                         <span class="col-span-2 text-slate-500">${moveNum}.</span>
                         <span class="col-span-5 font-semibold">${whiteMove}</span>
                         <span class="col-span-5 font-semibold">${blackMove}</span>
@@ -1254,7 +1663,7 @@
         }
 
         /*************************************************************************
-         * 7. CONTROLS, MODALS, CLIPBOARD & NOTIFICATIONS
+         * 8. CONTROLS, MODALS, CLIPBOARD & NOTIFICATIONS
          *************************************************************************/
         function flipBoardManual() {
             boardFlipped = !boardFlipped;
@@ -1277,7 +1686,7 @@
             }
             if (gameMode === 'online' && conn && conn.open) {
                 sendNetwork({ type: 'draw_offer' });
-                showToast('Đã gửi lời đề nghị hòa tới đối thủ.', 'info');
+                showToast(`Đã gửi lời xin hòa tới ${opponentName}.`, 'info');
             } else {
                 showToast('Chưa có đối thủ trong phòng.', 'error');
             }
@@ -1291,7 +1700,11 @@
                 () => {
                     if (gameMode === 'online') {
                         sendNetwork({ type: 'resign' });
-                        endGame('Bạn Đã Đầu Hàng', 'Đối thủ giành chiến thắng', '🏳️');
+                        endGame('Bạn Đã Đầu Hàng', `${opponentName} giành chiến thắng`, '🏳️');
+                    } else if (gameMode === 'local') {
+                        const loser = chess.turn() === 'w' ? localPlayer1Name : localPlayer2Name;
+                        const winner = chess.turn() === 'w' ? localPlayer2Name : localPlayer1Name;
+                        endGame(`${loser} Đầu Hàng`, `${winner} giành chiến thắng`, '🏳️');
                     } else {
                         const loser = chess.turn() === 'w' ? 'Quân Trắng' : 'Quân Đen';
                         const winner = chess.turn() === 'w' ? 'Quân Đen' : 'Quân Trắng';
@@ -1304,7 +1717,7 @@
         }
 
         function handleOpponentResign() {
-            endGame('Chiến Thắng!', 'Đối thủ đã đầu hàng', '🏆');
+            endGame('Chiến Thắng!', `${opponentName} đã đầu hàng`, '🏆');
         }
 
         function requestRematch() {
@@ -1316,13 +1729,14 @@
             }
             if (gameMode === 'online' && conn && conn.open) {
                 sendNetwork({ type: 'rematch_request' });
-                showToast('Đã gửi lời mời tái đấu tới đối thủ...', 'info');
+                showToast(`Đã gửi lời mời tái đấu tới ${opponentName}...`, 'info');
             } else {
                 createOnlineRoom();
             }
         }
 
         function openLobbyModal() {
+            document.getElementById('input-player-name').value = myName;
             document.getElementById('lobby-modal').classList.remove('hidden');
         }
 
@@ -1354,14 +1768,14 @@
             const url = new URL(window.location.href);
             url.searchParams.set('room', roomCode);
             copyTextFallback(url.toString());
-            showToast('Đã sao chép link mời! Gửi link này cho bạn bè để vào chơi ngay.', 'success');
+            showToast('Đã sao chép link mời! Gửi link này cho đối thủ để vào chơi ngay.', 'success');
         }
 
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const colors = {
-                info: 'bg-slate-900/95 border-sky-500/50 text-sky-100',
+                info: 'bg-slate-900/95 border-amber-500/45 text-amber-100',
                 success: 'bg-slate-900/95 border-emerald-500/60 text-emerald-200',
                 error: 'bg-slate-900/95 border-rose-500/60 text-rose-200'
             };
@@ -1379,12 +1793,12 @@
         function showInteractiveToast(message, yesLabel, onYes, noLabel, onNo) {
             const container = document.getElementById('toast-container');
             const box = document.createElement('div');
-            box.className = 'pointer-events-auto w-full p-4 rounded-2xl bg-slate-900/95 border border-sky-500/60 shadow-2xl backdrop-blur-md text-xs sm:text-sm text-white';
+            box.className = 'pointer-events-auto w-full p-4 rounded-2xl bg-slate-900/95 border border-amber-500/60 shadow-2xl backdrop-blur-md text-xs sm:text-sm text-white';
             box.innerHTML = `
                 <p class="font-medium mb-3">${message}</p>
                 <div class="flex justify-end gap-2">
                     <button id="toast-no" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition">${noLabel}</button>
-                    <button id="toast-yes" class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition">${yesLabel}</button>
+                    <button id="toast-yes" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs transition">${yesLabel}</button>
                 </div>
             `;
             container.appendChild(box);
@@ -1400,16 +1814,30 @@
         }
 
         /*************************************************************************
-         * 8. INITIALIZATION ON PAGE LOAD (AUTO-JOIN IF ?room=XXXX IN URL)
+         * 9. INITIALIZATION ON PAGE LOAD
          *************************************************************************/
         window.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem(STORAGE_NAME_KEY);
+            document.getElementById('input-player-name').value = myName;
+            document.getElementById('welcome-name-input').value = savedName || '';
             renderAll();
+
             const params = new URLSearchParams(window.location.search);
             const urlRoom = params.get('room');
             if (urlRoom && urlRoom.trim().length >= 4) {
-                document.getElementById('input-room-code').value = urlRoom.trim().toUpperCase();
-                joinOnlineRoom(urlRoom);
+                pendingRoomFromUrl = urlRoom.trim().toUpperCase();
+                document.getElementById('input-room-code').value = pendingRoomFromUrl;
             }
+
+            // Always show the Welcome Name modal first on entry so players can set/change their name immediately
+            document.getElementById('welcome-name-modal').classList.remove('hidden');
+            setTimeout(() => {
+                const welcomeInput = document.getElementById('welcome-name-input');
+                if (welcomeInput) {
+                    welcomeInput.focus();
+                    welcomeInput.select();
+                }
+            }, 100);
         });
     </script>
 </body>
