@@ -318,7 +318,7 @@
                     <div id="gameover-overlay" class="hidden absolute inset-0 z-25 bg-slate-950/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-6 text-center">
                         <div class="glass-panel p-6 rounded-2xl max-w-xs w-full border border-amber-500/40">
                             <div id="gameover-icon" class="text-4xl mb-2">🏆</div>
-                            <h2 id="gameover-title" class="text-xl font-extrabold text-amber-200 mb-1">Chiếu Bí!</h2>
+                            <h2 id="gameover-title" class="text-xl font-extrabold text-amber-200 mb-1">Chiếu Hết!</h2>
                             <p id="gameover-subtitle" class="text-sm text-slate-300 mb-5">Quân Trắng giành chiến thắng</p>
                             <div class="flex flex-col gap-2">
                                 <button id="btn-rematch" onclick="requestRematch()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm shadow-lg transition">
@@ -1479,22 +1479,22 @@
             if (chess.in_checkmate()) {
                 const winnerColor = chess.turn() === 'w' ? 'b' : 'w';
                 const winnerText = winnerColor === 'w' ? 'Quân Trắng thắng!' : 'Quân Đen thắng!';
-                let sub = `Chiếu bí • ${winnerText}`;
+                let sub = `Chiếu Hết • ${winnerText}`;
                 if (gameMode === 'online') {
                     sub = winnerColor === myColor
-                        ? `Chúc mừng ${myName}! Bạn đã chiếu bí ${opponentName}!`
-                        : `${opponentName} đã chiếu bí bạn!`;
+                        ? `Chúc mừng ${myName}! Bạn đã chiếu hết ${opponentName}!`
+                        : `${opponentName} đã chiếu hết bạn!`;
                 } else if (gameMode === 'local') {
                     const localWinner = winnerColor === 'w' ? localPlayer1Name : localPlayer2Name;
-                    sub = `Chúc mừng ${localWinner}! Chiếu bí đối phương.`;
+                    sub = `Chúc mừng ${localWinner}! Chiếu hết đối phương.`;
                 }
-                endGame('Chiếu Bí!', sub, '🏆');
+                endGame('Chiếu Hết!', sub, '🏆');
             } else if (chess.in_stalemate()) {
                 endGame('Hòa Cờ (Pat)!', 'Bên đi tiếp không còn nước đi hợp lệ', '🤝');
             } else if (chess.in_threefold_repetition()) {
                 endGame('Hòa Cờ!', 'Lặp lại thế cờ 3 lần', '🤝');
             } else if (chess.insufficient_material()) {
-                endGame('Hòa Cờ!', 'Không đủ lực lượng để chiếu bí', '🤝');
+                endGame('Hòa Cờ!', 'Không đủ lực lượng để chiếu hết', '🤝');
             } else if (chess.in_draw()) {
                 endGame('Hòa Cờ!', 'Ván đấu kết thúc với tỷ số hòa', '🤝');
             }
