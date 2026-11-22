@@ -1,345 +1,746 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grand Piano 88 Keys</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="https://play-lh.googleusercontent.com/4J3Jch2AxCa4HE0iWzEjknponM7NqcLQ3kuly2IznzANPdSUv5CSTO1FoJlExIwv1LyZa0T5eUuYfs801GtOYC4=w256">
-    <style>
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            user-select: none;
-            color: #fff;
-            min-height: 100vh;
-            justify-content: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Piano 88 Keys | HoangTienMinh</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="https://play-lh.googleusercontent.com/4J3Jch2AxCa4HE0iWzEjknponM7NqcLQ3kuly2IznzANPdSUv5CSTO1FoJlExIwv1LyZa0T5eUuYfs801GtOYC4=w256">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
 
-        .brand {
-            font-size: 28px;
-            font-weight: 300;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            color: #ffd752; 
-            margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
-        }
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Be Vietnam Pro', Arial, sans-serif;
+      color: #f4f7fb;
+      background:
+        linear-gradient(125deg, transparent 20%, rgba(56, 189, 248, 0.06) 45%, rgba(139, 92, 246, 0.07) 55%, transparent 80%),
+        radial-gradient(circle at 18% 22%, rgba(56, 189, 248, 0.12), transparent 38%),
+        radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.12), transparent 42%),
+        radial-gradient(ellipse at bottom, #131d2b 0%, #06080d 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 18px 64px;
+    }
 
-        .subtitle {
-            color: #666;
-            font-size: 13px;
-            letter-spacing: 2px;
-            margin-top: 0;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
+    #sky-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        .piano-rim {
-            width: 100%;
-            max-width: 1300px;
-            background: linear-gradient(to bottom, #222 0%, #050505 100%);
-            padding: 25px 20px 15px 20px;
-            border-radius: 12px 12px 18px 18px;
-            box-shadow: 
-                0 25px 50px rgba(0,0,0,0.9),
-                inset 0 2px 3px rgba(255,255,255,0.1);
-            border: 4px solid #111;
-            border-bottom: 8px solid #000;
-            position: relative;
-        }
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeUp 0.7s ease both;
+    }
 
-        .piano-rim::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            right: 20px;
-            height: 6px;
-            background: #a30000;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
+    .header-box {
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-        .piano-container {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 6px;
-            background: #000;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-x;
-        }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
 
-        .piano {
-            display: flex;
-            position: relative;
-            width: fit-content;
-            background: #000;
-        }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffd752;
+      box-shadow: 0 0 8px #ffd752;
+      animation: pulseDot 2s infinite;
+    }
 
-        .key {
-            position: relative;
-            width: 32px;
-            height: 220px;
-            background: linear-gradient(to bottom, #fff 0%, #fcfcfc 60%, #e8e8e8 100%);
-            border: 1px solid #c0c0c0;
-            border-bottom: 4px solid #d4d4d4;
-            border-radius: 0 0 5px 5px;
-            box-sizing: border-box;
-            cursor: pointer;
-            z-index: 1;
-            transition: background 0.05s, transform 0.05s, box-shadow 0.05s;
-            transform-origin: top;
-        }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
 
-        .key::after {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px;
-            color: #aaa;
-            font-weight: 600;
-        }
+    .brand {
+      font-size: clamp(1.7rem, 3.8vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #ffd752, #7dd3fc, #f0abfc, #6ee7b7, #ffd752);
+      background-size: 320% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: spectralShift 14s linear infinite;
+      filter: drop-shadow(0 0 14px rgba(255, 215, 82, 0.2));
+    }
 
-        .key:active, .key.active {
-            background: linear-gradient(to bottom, #e0e0e0 0%, #f3f3f3 40%, #fff 100%);
-            border-bottom: 1px solid #d4d4d4;
-            box-shadow: 
-                inset 0 10px 20px rgba(0,0,0,0.15),
-                inset 0 2px 5px rgba(0,0,0,0.2);
-            transform: scaleY(0.99) translateY(1px);
-        }
+    @keyframes spectralShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        .key.active::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #d4af37;
-            box-shadow: 0 2px 10px #d4af37;
-            z-index: 5;
-        }
+    .subtitle {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
 
-        .key.black {
-            position: absolute;
-            width: 20px;
-            height: 140px;
-            background: linear-gradient(to bottom, #333 0%, #161616 70%, #000 100%);
-            border: 1px solid #000;
-            border-bottom: 5px solid #222;
-            border-radius: 0 0 4px 4px;
-            z-index: 2;
-            margin-left: -10px;
-            box-shadow: -3px 4px 8px rgba(0,0,0,0.6);
-        }
+    .piano-shell {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 20px 20px 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+    }
 
-        .key.black:active, .key.black.active {
-            background: linear-gradient(to bottom, #111 0%, #292929 100%);
-            border-bottom: 1px solid #111;
-            box-shadow: -1px 2px 4px rgba(0,0,0,0.8);
-            transform: scaleY(0.98) translateY(1px);
-        }
-        
-        .key.black.active::before {
-            background: #00adb5;
-            box-shadow: 0 2px 10px #00adb5;
-        }
+    .hud-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: rgba(6, 10, 18, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        /* --- THANH CUỘN TO VÀ NỔI BẬT ĐỂ DỄ DÀNG KÉO TRÊN MÁY TÍNH & ĐIỆN THOẠI --- */
-        .piano-container::-webkit-scrollbar { 
-            height: 20px; 
-        }
-        
-        .piano-container::-webkit-scrollbar-track { 
-            background: #111; 
-            border-radius: 10px;
-            margin: 0 10px;
-            box-shadow: inset 0 0 5px #000;
-        }
-        
-        .piano-container::-webkit-scrollbar-thumb { 
-            background: linear-gradient(to bottom, #d4af37, #8a7122); 
-            border-radius: 10px;
-            border: 2px solid #111;
-            cursor: pointer;
-        }
-        
-        .piano-container::-webkit-scrollbar-thumb:hover { 
-            background: linear-gradient(to bottom, #ffd752, #d4af37); 
-        }
-    </style>
+    .note-readout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .note-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #ffd752;
+      background: rgba(255, 215, 82, 0.14);
+      border: 1px solid rgba(255, 215, 82, 0.35);
+    }
+
+    .hint-text {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .piano-rim {
+      width: 100%;
+      background: linear-gradient(to bottom, #1e2430 0%, #07090e 100%);
+      padding: 22px 16px 14px;
+      border-radius: 14px;
+      box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.14),
+        0 14px 32px rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .piano-rim::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      right: 16px;
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #991b1b, #ef4444, #991b1b);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+      z-index: 10;
+    }
+
+    .piano-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 8px;
+      background: #040508;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+
+    .piano {
+      display: flex;
+      position: relative;
+      width: fit-content;
+      background: #040508;
+    }
+
+    .key {
+      position: relative;
+      width: 34px;
+      height: 224px;
+      background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 65%, #e2e8f0 100%);
+      border: 1px solid #cbd5e1;
+      border-bottom: 5px solid #94a3b8;
+      border-radius: 0 0 6px 6px;
+      box-sizing: border-box;
+      cursor: pointer;
+      z-index: 1;
+      transition: background 0.05s ease, transform 0.05s ease, box-shadow 0.05s ease;
+      transform-origin: top;
+    }
+
+    .key:hover {
+      background: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 65%, #cbd5e1 100%);
+    }
+
+    .key:active,
+    .key.active {
+      background: linear-gradient(to bottom, #fef9c3 0%, #fde047 45%, #facc15 100%);
+      border-bottom: 2px solid #ca8a04;
+      box-shadow:
+        inset 0 8px 18px rgba(0, 0, 0, 0.18),
+        0 0 14px rgba(250, 204, 21, 0.45);
+      transform: scaleY(0.99) translateY(1px);
+    }
+
+    .key.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #eab308;
+      box-shadow: 0 2px 10px #eab308;
+      z-index: 5;
+    }
+
+    .key-label {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .key.black {
+      position: absolute;
+      width: 21px;
+      height: 142px;
+      background: linear-gradient(to bottom, #334155 0%, #0f172a 65%, #020617 100%);
+      border: 1px solid #020617;
+      border-bottom: 5px solid #0f172a;
+      border-radius: 0 0 5px 5px;
+      z-index: 2;
+      margin-left: -10.5px;
+      box-shadow: -3px 5px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .key.black:hover {
+      background: linear-gradient(to bottom, #475569 0%, #1e293b 65%, #020617 100%);
+    }
+
+    .key.black:active,
+    .key.black.active {
+      background: linear-gradient(to bottom, #06b6d4 0%, #0891b2 65%, #164e63 100%);
+      border-bottom: 2px solid #0e7490;
+      box-shadow:
+        -1px 2px 6px rgba(0, 0, 0, 0.8),
+        0 0 16px rgba(34, 211, 238, 0.65);
+      transform: scaleY(0.98) translateY(1px);
+    }
+
+    .key.black.active::before {
+      background: #22d3ee;
+      box-shadow: 0 2px 12px #22d3ee;
+    }
+
+    .piano-container::-webkit-scrollbar {
+      height: 14px;
+    }
+
+    .piano-container::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 999px;
+      margin: 0 8px;
+    }
+
+    .piano-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #eab308, #38bdf8);
+      border-radius: 999px;
+      border: 3px solid rgba(15, 23, 42, 0.85);
+      cursor: pointer;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 12px;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+      font-size: 0.86rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 44px 12px 60px;
+        background:
+          linear-gradient(155deg, transparent 10%, rgba(56, 189, 248, 0.14) 38%, rgba(139, 92, 246, 0.16) 62%, transparent 90%),
+          radial-gradient(circle at 15% 18%, rgba(56, 189, 248, 0.24), transparent 46%),
+          radial-gradient(circle at 85% 24%, rgba(168, 85, 247, 0.24), transparent 48%),
+          radial-gradient(ellipse at bottom, #162236 0%, #06080d 100%);
+      }
+
+      .brand {
+        letter-spacing: 6px;
+      }
+
+      .piano-shell {
+        padding: 14px 12px;
+        border-radius: 16px;
+      }
+
+      .piano-rim {
+        padding: 18px 10px 10px;
+      }
+
+      .key {
+        width: 30px;
+        height: 190px;
+      }
+
+      .key.black {
+        width: 19px;
+        height: 120px;
+        margin-left: -9.5px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <canvas id="sky-canvas"></canvas>
 
-    <div class="brand">YAMAHA</div>
-    <div class="subtitle">Virtual Grand Piano Simulation</div>
+  <main class="container">
+    <header class="header-box">
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span>HoangTienMinh • 88 Keys Studio</span>
+      </div>
+      <h1 class="brand">YAMAHA</h1>
+      <p class="subtitle">Virtual Grand Piano Simulation</p>
+    </header>
 
-    <div class="piano-rim">
-        <div class="piano-container" id="scroll-box">
-            <div class="piano" id="piano"></div>
+    <section class="piano-shell">
+      <div class="hud-bar">
+        <div class="note-readout">
+          <span>Nốt đang chơi:</span>
+          <span class="note-badge" id="note-display">--</span>
+          <span id="freq-display" class="hint-text"></span>
         </div>
-    </div>
+        <div class="hint-text">Hàng trên: Q–\ (C5–E6) • Hàng dưới: Z–/ (C3–E4)</div>
+      </div>
 
-    <script>
-        const piano = document.getElementById('piano');
-        const scrollBox = document.getElementById('scroll-box');
-        
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
+      <div class="piano-rim">
+        <div class="piano-container" id="scroll-box">
+          <div class="piano" id="piano"></div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-        const totalKeys = 88;
-        const startKeyIndex = 9; // A0
+  <footer>© 2026 HoangTienMinh. All rights reserved.</footer>
 
-        function getFrequency(keyIndex) {
-            return 440 * Math.pow(2, (keyIndex - 57) / 12);
+  <script>
+    const piano = document.getElementById('piano');
+    const scrollBox = document.getElementById('scroll-box');
+    const noteDisplay = document.getElementById('note-display');
+    const freqDisplay = document.getElementById('freq-display');
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const totalKeys = 88;
+    const startKeyIndex = 9; // A0
+
+    function getKeyWidth() {
+      return window.innerWidth <= 600 ? 30 : 34;
+    }
+
+    function getFrequency(keyIndex) {
+      return 440 * Math.pow(2, (keyIndex - 57) / 12);
+    }
+
+    function getNoteNameAndOctave(keyIndex) {
+      const noteIndex = keyIndex % 12;
+      const octave = Math.floor(keyIndex / 12);
+      return {
+        name: noteNames[noteIndex],
+        octave,
+        label: `${noteNames[noteIndex]}${octave}`,
+        isBlack: noteNames[noteIndex].includes('#')
+      };
+    }
+
+    function playPianoAcoustic(freq) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+      const masterGain = audioCtx.createGain();
+
+      const filterNode = audioCtx.createBiquadFilter();
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(freq * 5.0, now);
+      filterNode.frequency.exponentialRampToValueAtTime(Math.max(80, freq * 1.1), now + 2.5);
+
+      filterNode.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      const createString = (detuneVal, waveType, volume) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = waveType;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.detune.setValueAtTime(detuneVal, now);
+        gain.gain.setValueAtTime(volume, now);
+
+        osc.connect(gain);
+        gain.connect(filterNode);
+
+        osc.start(now);
+        const stringDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
+        osc.stop(now + stringDecay);
+      };
+
+      createString(-2, 'triangle', 0.35);
+      createString(2, 'triangle', 0.35);
+      createString(0, 'sine', Math.max(0.15, 0.5 * (1 - freq / 900)));
+      createString(5, 'sawtooth', 0.015);
+
+      const resonanceOsc = audioCtx.createOscillator();
+      const resonanceGain = audioCtx.createGain();
+      resonanceOsc.type = 'sine';
+      resonanceOsc.frequency.setValueAtTime(freq * 0.5, now);
+      resonanceGain.gain.setValueAtTime(0.15, now);
+      resonanceGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      resonanceOsc.connect(resonanceGain);
+      resonanceGain.connect(audioCtx.destination);
+      resonanceOsc.start(now);
+      resonanceOsc.stop(now + 0.15);
+
+      masterGain.gain.setValueAtTime(0.001, now);
+      masterGain.gain.linearRampToValueAtTime(0.85, now + 0.003);
+
+      const totalDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
+      masterGain.gain.exponentialRampToValueAtTime(0.001, now + totalDecay);
+    }
+
+    let startX = 0;
+    let isScrolling = false;
+    const keyElements = {};
+    const blackKeys = [];
+
+    function buildPiano() {
+      piano.innerHTML = '';
+      blackKeys.length = 0;
+      let whiteKeyCount = 0;
+      const keyW = getKeyWidth();
+
+      for (let i = startKeyIndex; i < startKeyIndex + totalKeys; i++) {
+        const noteInfo = getNoteNameAndOctave(i);
+        const freq = getFrequency(i);
+        const keyBtn = document.createElement('div');
+
+        keyBtn.className = 'key';
+        keyBtn.dataset.freq = freq;
+        keyBtn.dataset.note = noteInfo.label;
+        keyElements[i] = keyBtn;
+
+        if (!noteInfo.isBlack && noteInfo.name === 'C') {
+          const label = document.createElement('span');
+          label.className = 'key-label';
+          label.textContent = noteInfo.label;
+          keyBtn.appendChild(label);
         }
 
-        function getNoteNameAndOctave(keyIndex) {
-            const noteIndex = keyIndex % 12;
-            const octave = Math.floor(keyIndex / 12);
-            return { name: noteNames[noteIndex], octave, isBlack: noteNames[noteIndex].includes('#') };
+        if (noteInfo.isBlack) {
+          keyBtn.classList.add('black');
+          keyBtn.dataset.whiteIndex = whiteKeyCount;
+          keyBtn.style.left = `${whiteKeyCount * keyW}px`;
+          blackKeys.push(keyBtn);
+        } else {
+          whiteKeyCount++;
         }
 
-        function playPianoAcoustic(freq) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            const now = audioCtx.currentTime;
-            const masterGain = audioCtx.createGain();
-            
-            const filterNode = audioCtx.createBiquadFilter();
-            filterNode.type = "lowpass";
-            filterNode.frequency.setValueAtTime(freq * 5.0, now);
-            filterNode.frequency.exponentialRampToValueAtTime(freq * 1.1, now + 2.5);
-
-            filterNode.connect(masterGain);
-            masterGain.connect(audioCtx.destination);
-
-            const createString = (detuneVal, waveType, volume) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = waveType;
-                osc.frequency.setValueAtTime(freq, now); 
-                osc.detune.setValueAtTime(detuneVal, now);
-                gain.gain.setValueAtTime(volume, now);
-                
-                osc.connect(gain);
-                gain.connect(filterNode);
-                
-                osc.start(now);
-                const stringDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
-                osc.stop(now + stringDecay);
-            };
-
-            createString(-2, 'triangle', 0.35); 
-            createString(2, 'triangle', 0.35);  
-            createString(0, 'sine', Math.max(0.15, 0.5 * (1 - freq / 900)));
-            createString(5, 'sawtooth', 0.015); 
-            
-            const resonanceOsc = audioCtx.createOscillator();
-            const resonanceGain = audioCtx.createGain();
-            resonanceOsc.type = 'sine';
-            resonanceOsc.frequency.setValueAtTime(freq * 0.5, now); 
-            resonanceGain.gain.setValueAtTime(0.15, now);
-            resonanceGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1); 
-            resonanceOsc.connect(resonanceGain);
-            resonanceGain.connect(audioCtx.destination);
-            resonanceOsc.start(now);
-            resonanceOsc.stop(now + 0.15);
-            
-            masterGain.gain.setValueAtTime(0.001, now);
-            masterGain.gain.linearRampToValueAtTime(0.85, now + 0.003); 
-            
-            const totalDecay = Math.max(0.8, 3.5 * (1 - freq / 4500));
-            masterGain.gain.exponentialRampToValueAtTime(0.001, now + totalDecay);
-        }
-
-        let whiteKeyCount = 0;
-        const keyElements = {};
-
-        for (let i = startKeyIndex; i < startKeyIndex + totalKeys; i++) {
-            const noteInfo = getNoteNameAndOctave(i);
-            const keyBtn = document.createElement('div');
-            
-            keyBtn.className = 'key';
-            keyBtn.dataset.freq = getFrequency(i);
-            keyElements[i] = keyBtn;
-
-            if (!noteInfo.isBlack && noteInfo.name === 'C') {
-                keyBtn.dataset.isC = "true"; // Đánh dấu đây là phím C để cho phép vuốt trên mobile
-                const label = document.createElement('span');
-                label.style.position = 'absolute';
-                label.style.bottom = '8px';
-                label.style.fontSize = '9px';
-                label.style.color = '#999';
-                label.innerText = noteInfo.name + noteInfo.octave;
-                keyBtn.appendChild(label);
-            }
-
-            if (noteInfo.isBlack) {
-                keyBtn.classList.add('black');
-                keyBtn.style.left = `${whiteKeyCount * 32}px`;
-            } else {
-                whiteKeyCount++;
-            }
-
-            const triggerNote = (e) => {
-                if (isScrolling) return; 
-                e.preventDefault();
-                playPianoAcoustic(parseFloat(keyBtn.dataset.freq));
-                keyBtn.classList.add('active');
-            };
-
-            const releaseNote = () => keyBtn.classList.remove('active');
-
-            // Xử lý sự kiện bấm phím trên máy tính
-            keyBtn.addEventListener('mousedown', triggerNote);
-            keyBtn.addEventListener('mouseup', releaseNote);
-            keyBtn.addEventListener('mouseleave', releaseNote);
-            
-            // Xử lý sự kiện trên di động
-            keyBtn.addEventListener('touchstart', (e) => {
-                if (!isScrolling) triggerNote(e);
-            }, {passive: false});
-            keyBtn.addEventListener('touchend', releaseNote);
-
-            piano.appendChild(keyBtn);
-        }
-
-        // --- XỬ LÝ PHÂN BIỆT ĐIỆN THOẠI & MÁY TÍNH ---
-        let startX = 0;
-        let isScrolling = false;
-
-        // Điện thoại: Cho phép vuốt mượt mà không bị giật khựng
-        scrollBox.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].pageX;
-            isScrolling = false;
-        }, { passive: true });
-
-        scrollBox.addEventListener('touchmove', (e) => {
-            const x = e.touches[0].pageX;
-            if (Math.abs(startX - x) > 10) {
-                isScrolling = true; // Xác định người dùng đang kéo vuốt màn hình
-            }
-        }, { passive: true });
-
-        // Tự động cuộn đến nốt C trung tâm khi tải trang xong
-        window.onload = () => {
-            const middleC = keyElements[48];
-            if (middleC) {
-                scrollBox.scrollLeft = middleC.offsetLeft - scrollBox.offsetWidth / 2 + 160;
-            }
+        const triggerNote = (e) => {
+          if (isScrolling) return;
+          if (e) e.preventDefault();
+          const f = parseFloat(keyBtn.dataset.freq);
+          playPianoAcoustic(f);
+          keyBtn.classList.add('active');
+          noteDisplay.textContent = keyBtn.dataset.note;
+          freqDisplay.textContent = `${f.toFixed(1)} Hz`;
         };
-    </script>
+
+        const releaseNote = () => {
+          keyBtn.classList.remove('active');
+        };
+
+        keyBtn.addEventListener('mousedown', triggerNote);
+        keyBtn.addEventListener('mouseup', releaseNote);
+        keyBtn.addEventListener('mouseleave', releaseNote);
+
+        keyBtn.addEventListener('touchstart', (e) => {
+          if (!isScrolling) triggerNote(e);
+        }, { passive: false });
+        keyBtn.addEventListener('touchend', releaseNote);
+
+        piano.appendChild(keyBtn);
+      }
+    }
+
+    function updateBlackKeyPositions() {
+      const keyW = getKeyWidth();
+      blackKeys.forEach((bKey) => {
+        const idx = parseInt(bKey.dataset.whiteIndex, 10);
+        bKey.style.left = `${idx * keyW}px`;
+      });
+    }
+
+    scrollBox.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].pageX;
+      isScrolling = false;
+    }, { passive: true });
+
+    scrollBox.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].pageX;
+      if (Math.abs(startX - x) > 10) {
+        isScrolling = true;
+      }
+    }, { passive: true });
+
+    // Hàng trên: qwertyuiop[]\ bắt đầu từ C5 (60)
+    // Hàng dưới: zxcvbnm,./ bắt đầu từ C3 (36)
+    const keyMap = {
+      // Hàng trên (phím trắng bắt đầu từ C5 = 60)
+      'q': 60, // C5
+      'w': 62, // D5
+      'e': 64, // E5
+      'r': 65, // F5
+      't': 67, // G5
+      'y': 69, // A5
+      'u': 71, // B5
+      'i': 72, // C6
+      'o': 74, // D6
+      'p': 76, // E6
+      '[': 77, // F6
+      ']': 79, // G6
+      '\\': 81, // A6
+      // Phím đen tương ứng hàng trên
+      '2': 61, // C#5
+      '3': 63, // D#5
+      '5': 66, // F#5
+      '6': 68, // G#5
+      '7': 70, // A#5
+      '9': 73, // C#6
+      '0': 75, // D#6
+      '=': 78, // F#6
+      'backspace': 80, // G#6
+
+      // Hàng dưới (phím trắng bắt đầu từ C3 = 36)
+      'z': 36, // C3
+      'x': 38, // D3
+      'c': 40, // E3
+      'v': 41, // F3
+      'b': 43, // G3
+      'n': 45, // A3
+      'm': 47, // B3
+      ',': 48, // C4
+      '.': 50, // D4
+      '/': 52, // E4
+      // Phím đen tương ứng hàng dưới
+      's': 37, // C#3
+      'd': 39, // D#3
+      'g': 42, // F#3
+      'h': 44, // G#3
+      'j': 46, // A#3
+      'l': 49, // C#4
+      ';': 51  // D#4
+    };
+    const heldKeys = new Set();
+
+    window.addEventListener('keydown', (e) => {
+      const k = e.key.toLowerCase();
+      if (keyMap[k] !== undefined && !heldKeys.has(k)) {
+        if (k === '/' || k === "'" || k === 'backspace') e.preventDefault();
+        heldKeys.add(k);
+        const idx = keyMap[k];
+        const el = keyElements[idx];
+        if (el) {
+          const f = parseFloat(el.dataset.freq);
+          playPianoAcoustic(f);
+          el.classList.add('active');
+          noteDisplay.textContent = el.dataset.note;
+          freqDisplay.textContent = `${f.toFixed(1)} Hz`;
+        }
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      const k = e.key.toLowerCase();
+      if (keyMap[k] !== undefined) {
+        heldKeys.delete(k);
+        const el = keyElements[keyMap[k]];
+        if (el) el.classList.remove('active');
+      }
+    });
+
+    function centerMiddleC() {
+      const middleC = keyElements[48];
+      if (middleC) {
+        scrollBox.scrollLeft = middleC.offsetLeft - scrollBox.offsetWidth / 2 + getKeyWidth() * 3;
+      }
+    }
+
+    // Nền sao băng
+    const canvas = document.getElementById("sky-canvas");
+    const ctx = canvas.getContext("2d");
+    let width, height, stars = [], shootingStars = [];
+
+    const STAR_COLORS = ["255, 255, 255", "210, 232, 255", "255, 244, 224"];
+
+    function resizeSky() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      const starCount = Math.min(360, Math.floor((width * height) / 3600));
+      stars = Array.from({ length: starCount }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.1 + 0.35,
+        alpha: Math.random() * 0.65 + 0.25,
+        minAlpha: 0.15,
+        maxAlpha: 0.9,
+        delta: (Math.random() * 0.003 + 0.001) * (Math.random() < 0.5 ? 1 : -1),
+        color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)]
+      }));
+    }
+
+    function spawnShootingStar() {
+      const angle = (Math.random() * 14 + 32) * (Math.PI / 180);
+      const speed = Math.random() * 5 + 11;
+      shootingStars.push({
+        x: Math.random() * width * 0.9 + width * 0.15,
+        y: Math.random() * height * 0.35,
+        vx: -Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        len: Math.random() * 90 + 80,
+        speed,
+        life: 1,
+        decay: Math.random() * 0.008 + 0.022
+      });
+    }
+
+    function scheduleShootingStar() {
+      setTimeout(() => {
+        spawnShootingStar();
+        scheduleShootingStar();
+      }, Math.random() * 3500 + 2500);
+    }
+
+    function drawSky() {
+      ctx.clearRect(0, 0, width, height);
+      for (const s of stars) {
+        s.alpha += s.delta;
+        if (s.alpha <= s.minAlpha || s.alpha >= s.maxAlpha) s.delta *= -1;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${s.color}, ${s.alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const st = shootingStars[i];
+        st.x += st.vx;
+        st.y += st.vy;
+        st.life -= st.decay;
+        if (st.life <= 0 || st.x < -200 || st.y > height + 200) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+        const tailX = st.x - (st.vx / st.speed) * st.len;
+        const tailY = st.y - (st.vy / st.speed) * st.len;
+        const grad = ctx.createLinearGradient(st.x, st.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${st.life.toFixed(2)})`);
+        grad.addColorStop(0.4, `rgba(125, 211, 252, ${(st.life * 0.65).toFixed(2)})`);
+        grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+        ctx.beginPath();
+        ctx.moveTo(st.x, st.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+      requestAnimationFrame(drawSky);
+    }
+
+    window.addEventListener("resize", () => {
+      resizeSky();
+      updateBlackKeyPositions();
+    });
+
+    buildPiano();
+    resizeSky();
+    centerMiddleC();
+    setTimeout(spawnShootingStar, 1200);
+    scheduleShootingStar();
+    drawSky();
+  </script>
 </body>
-</html>
+</html>\\
