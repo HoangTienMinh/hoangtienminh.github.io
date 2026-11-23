@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cờ Vua Online 2 Người - Dev By Hoàng Tiến Minh</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" sizes="64x64" href="https://shared.fastly.steamstatic.com/community_assets/images/apps/3576290/090fb9a8ebfb4faf4e2985e1cd99fb9f5ed044a6.jpg">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://play-lh.googleusercontent.com/XkdV-KenuxGtZ2YDDoW5onmZO_n2GT_3vBWzvAGZ5cnaP9b4DZPYM0dw-SNAZkQC77I=w256">
+    <!-- Chess.js (Full International Chess Rules Engine) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <!-- PeerJS (WebRTC P2P Multiplayer) -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
     <style>
@@ -363,10 +367,10 @@
                         <div id="promotion-choices" class="flex items-center gap-3 bg-slate-900/95 p-3.5 rounded-2xl border border-sky-500/40 shadow-2xl"></div>
                     </div>
 
-                    <div id="gameover-overlay" class="hidden absolute inset-0 z-25 bg-slate-950/80 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center p-6 text-center">
+                    <div id="gameover-overlay" class="hidden absolute inset-0 z-30 bg-slate-950/85 backdrop-blur-md rounded-xl flex flex-col items-center justify-center p-6 text-center">
                         <div class="glass-panel p-6 rounded-2xl max-w-xs w-full border border-sky-500/35">
                             <div id="gameover-icon" class="text-4xl mb-2">🏆</div>
-                            <h2 id="gameover-title" class="text-xl font-extrabold cosmic-shimmer-text mb-1">Chiếu Bí!</h2>
+                            <h2 id="gameover-title" class="text-xl font-extrabold cosmic-shimmer-text mb-1">Chiếu Hết!</h2>
                             <p id="gameover-subtitle" class="text-sm text-slate-300 mb-5">Quân Trắng giành chiến thắng</p>
                             <div class="flex flex-col gap-2">
                                 <button id="btn-rematch" onclick="requestRematch()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-teal-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg transition">
@@ -455,7 +459,7 @@
                 </div>
             </div>
 
-            <div class="glass-panel rounded-2xl p-4 flex flex-col h-64 lg:h-72">
+            <div class="glass-panel rounded-2xl p-4 flex flex-col h-72 lg:h-80">
                 <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800/90">
                     <span class="text-xs font-bold uppercase tracking-wider cosmic-accent-text">Biên Bản Trận Đấu</span>
                     <span id="move-count-label" class="text-xs font-mono text-slate-400">0 nước</span>
@@ -463,6 +467,30 @@
                 <div id="move-history-list" class="flex-1 overflow-y-auto space-y-1 pr-1 font-mono text-xs">
                     <div class="h-full flex items-center justify-center text-slate-500 italic font-sans">
                         Chưa có nước đi nào...
+                    </div>
+                </div>
+
+                <!-- Replay Scrubber Controls -->
+                <div id="replay-controls" class="hidden mt-2.5 pt-2.5 border-t border-slate-800/90 flex items-center justify-between gap-1.5">
+                    <div class="flex items-center gap-1">
+                        <button id="btn-replay-first" onclick="goToReplayIndex(0)" title="Về đầu ván" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none border border-slate-700 text-xs font-mono text-sky-300 transition">
+                            |◄
+                        </button>
+                        <button id="btn-replay-prev" onclick="stepReplay(-1)" title="Lùi 1 nước" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none border border-slate-700 text-xs font-mono text-sky-300 transition">
+                            ◄
+                        </button>
+                        <button id="btn-replay-next" onclick="stepReplay(1)" title="Tiến 1 nước" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none border border-slate-700 text-xs font-mono text-sky-300 transition">
+                            ►
+                        </button>
+                        <button id="btn-replay-last" onclick="goToReplayIndex(getFullHistory().length)" title="Tới cuối ván" class="px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none border border-slate-700 text-xs font-mono text-sky-300 transition">
+                            ►|
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span id="replay-step-label" class="font-mono text-[11px] text-slate-300">0/0</span>
+                        <button id="btn-show-gameover" onclick="showGameOverOverlay()" class="hidden px-2 py-1 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-[11px] font-semibold text-sky-200 transition">
+                            Kết Quả
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1246,6 +1274,7 @@
         let lastMove = null;
         let pendingPromotion = null;
         let isGameOver = false;
+        let replayIndex = null; // null = live position, 0..N = viewing move index
 
         let peer = null;
         let conn = null;
@@ -1269,6 +1298,78 @@
 
         const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+        function getFullHistory() {
+            return chess.history({ verbose: true });
+        }
+
+        function getActiveReplayIndex() {
+            const total = getFullHistory().length;
+            if (replayIndex === null || replayIndex >= total) return total;
+            return Math.max(0, replayIndex);
+        }
+
+        function isViewingPastMove() {
+            return getActiveReplayIndex() < getFullHistory().length;
+        }
+
+        function getViewChessInstance() {
+            const idx = getActiveReplayIndex();
+            const history = getFullHistory();
+            if (idx >= history.length) {
+                return { instance: chess, moveJustPlayed: idx > 0 ? history[idx - 1] : null };
+            }
+            const temp = new Chess();
+            for (let i = 0; i < idx; i++) {
+                temp.move(history[i]);
+            }
+            return { instance: temp, moveJustPlayed: idx > 0 ? history[idx - 1] : null };
+        }
+
+        function goToReplayIndex(targetIdx) {
+            const total = getFullHistory().length;
+            if (total === 0) return;
+            const clamped = Math.max(0, Math.min(total, targetIdx));
+            selectedSquare = null;
+            legalMovesForSelected = [];
+            replayIndex = clamped >= total ? null : clamped;
+            renderBoard();
+            renderMoveHistory();
+            renderCapturedAndAdvantage();
+            updatePlayerBars();
+            updateReplayControls();
+        }
+
+        function stepReplay(delta) {
+            const current = getActiveReplayIndex();
+            goToReplayIndex(current + delta);
+        }
+
+        function updateReplayControls() {
+            const total = getFullHistory().length;
+            const controlsEl = document.getElementById('replay-controls');
+            const showResultBtn = document.getElementById('btn-show-gameover');
+            const overlayHidden = document.getElementById('gameover-overlay').classList.contains('hidden');
+
+            if (total === 0) {
+                controlsEl.classList.add('hidden');
+                return;
+            }
+
+            controlsEl.classList.remove('hidden');
+            const current = getActiveReplayIndex();
+            document.getElementById('replay-step-label').textContent = `${current}/${total}`;
+            document.getElementById('btn-replay-first').disabled = current <= 0;
+            document.getElementById('btn-replay-prev').disabled = current <= 0;
+            document.getElementById('btn-replay-next').disabled = current >= total;
+            document.getElementById('btn-replay-last').disabled = current >= total;
+
+            if (isGameOver && overlayHidden) {
+                showResultBtn.classList.remove('hidden');
+            } else {
+                showResultBtn.classList.add('hidden');
+            }
+        }
 
         function generateRoomCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1546,6 +1647,7 @@
                                 const last = data.history[data.history.length - 1];
                                 lastMove = { from: last.from, to: last.to };
                             }
+                            replayIndex = null;
                             renderAll();
                         } else {
                             updatePlayerBars();
@@ -1658,6 +1760,7 @@
             lastMove = null;
             pendingPromotion = null;
             isGameOver = false;
+            replayIndex = null;
             document.getElementById('promotion-modal').classList.add('hidden');
             document.getElementById('gameover-overlay').classList.add('hidden');
             renderAll();
@@ -1668,6 +1771,7 @@
             renderMoveHistory();
             renderCapturedAndAdvantage();
             updatePlayerBars();
+            updateReplayControls();
             checkGameEndConditions();
         }
 
@@ -1675,13 +1779,16 @@
             const boardEl = document.getElementById('chessboard');
             boardEl.innerHTML = '';
 
+            const { instance: activeChess, moveJustPlayed } = getViewChessInstance();
+            const isPast = isViewingPastMove();
+
             const displayRanks = boardFlipped ? [...RANKS].reverse() : RANKS;
             const displayFiles = boardFlipped ? [...FILES].reverse() : FILES;
 
             let checkedKingSquare = null;
-            if (chess.in_check()) {
-                const turnColor = chess.turn();
-                const boardState = chess.board();
+            if (activeChess.in_check()) {
+                const turnColor = activeChess.turn();
+                const boardState = activeChess.board();
                 for (let r = 0; r < 8; r++) {
                     for (let c = 0; c < 8; c++) {
                         const p = boardState[r][c];
@@ -1703,10 +1810,10 @@
                     sqDiv.className = `square ${isLight ? 'light' : 'dark'}`;
                     sqDiv.dataset.square = sqName;
 
-                    if (selectedSquare === sqName) {
+                    if (!isPast && selectedSquare === sqName) {
                         sqDiv.classList.add('selected');
                     }
-                    if (lastMove && (lastMove.from === sqName || lastMove.to === sqName)) {
+                    if (moveJustPlayed && (moveJustPlayed.from === sqName || moveJustPlayed.to === sqName)) {
                         sqDiv.classList.add('last-move');
                     }
                     if (checkedKingSquare === sqName) {
@@ -1726,22 +1833,24 @@
                         sqDiv.appendChild(fileLabel);
                     }
 
-                    const piece = chess.get(sqName);
+                    const piece = activeChess.get(sqName);
                     if (piece) {
                         const key = piece.color + piece.type.toUpperCase();
                         sqDiv.insertAdjacentHTML('beforeend', PIECE_SVGS[key]);
                     }
 
-                    const legalTarget = legalMovesForSelected.find(m => m.to === sqName);
-                    if (legalTarget) {
-                        if (piece || legalTarget.flags.includes('e')) {
-                            const ring = document.createElement('div');
-                            ring.className = 'legal-capture';
-                            sqDiv.appendChild(ring);
-                        } else {
-                            const dot = document.createElement('div');
-                            dot.className = 'legal-dot';
-                            sqDiv.appendChild(dot);
+                    if (!isPast) {
+                        const legalTarget = legalMovesForSelected.find(m => m.to === sqName);
+                        if (legalTarget) {
+                            if (piece || legalTarget.flags.includes('e')) {
+                                const ring = document.createElement('div');
+                                ring.className = 'legal-capture';
+                                sqDiv.appendChild(ring);
+                            } else {
+                                const dot = document.createElement('div');
+                                dot.className = 'legal-dot';
+                                sqDiv.appendChild(dot);
+                            }
                         }
                     }
 
@@ -1752,7 +1861,7 @@
         }
 
         function handleSquareClick(sqName) {
-            if (isGameOver) return;
+            if (isGameOver || isViewingPastMove()) return;
 
             if (gameMode === 'online') {
                 if (!conn || !conn.open) {
@@ -1817,6 +1926,7 @@
             selectedSquare = null;
             legalMovesForSelected = [];
             lastMove = { from: moveResult.from, to: moveResult.to };
+            replayIndex = null;
 
             triggerMoveAudio(moveResult);
             renderAll();
@@ -1834,6 +1944,7 @@
             selectedSquare = null;
             legalMovesForSelected = [];
             lastMove = { from: moveObj.from, to: moveObj.to };
+            replayIndex = null;
 
             if (moveResult) triggerMoveAudio(moveResult);
             renderAll();
@@ -1863,22 +1974,22 @@
             if (chess.in_checkmate()) {
                 const winnerColor = chess.turn() === 'w' ? 'b' : 'w';
                 const winnerText = winnerColor === 'w' ? 'Quân Trắng thắng!' : 'Quân Đen thắng!';
-                let sub = `Chiếu bí • ${winnerText}`;
+                let sub = `Chiếu hết • ${winnerText}`;
                 if (gameMode === 'online') {
                     sub = winnerColor === myColor
-                        ? `Chúc mừng ${myName}! Bạn đã chiếu bí ${opponentName}!`
-                        : `${opponentName} đã chiếu bí bạn!`;
+                        ? `Chúc mừng ${myName}! Bạn đã chiếu hết ${opponentName}!`
+                        : `${opponentName} đã chiếu hết bạn!`;
                 } else if (gameMode === 'local') {
                     const localWinner = winnerColor === 'w' ? localPlayer1Name : localPlayer2Name;
-                    sub = `Chúc mừng ${localWinner}! Chiếu bí đối phương.`;
+                    sub = `Chúc mừng ${localWinner}! Chiếu hết đối phương.`;
                 }
-                endGame('Chiếu Bí!', sub, '🏆', false);
+                endGame('Chiếu Hết!', sub, '🏆', false);
             } else if (chess.in_stalemate()) {
                 endGame('Hòa Cờ (Pat)!', 'Bên đi tiếp không còn nước đi hợp lệ', '🤝', true);
             } else if (chess.in_threefold_repetition()) {
                 endGame('Hòa Cờ!', 'Lặp lại thế cờ 3 lần', '🤝', true);
             } else if (chess.insufficient_material()) {
-                endGame('Hòa Cờ!', 'Không đủ lực lượng để chiếu bí', '🤝', true);
+                endGame('Hòa Cờ!', 'Không đủ lực lượng để chiếu hết', '🤝', true);
             } else if (chess.in_draw()) {
                 endGame('Hòa Cờ!', 'Ván đấu kết thúc với tỷ số hòa', '🤝', true);
             }
@@ -1893,10 +2004,18 @@
             document.getElementById('gameover-title').textContent = title;
             document.getElementById('gameover-subtitle').textContent = subtitle;
             document.getElementById('gameover-overlay').classList.remove('hidden');
+            updateReplayControls();
         }
 
         function hideGameOverOverlay() {
             document.getElementById('gameover-overlay').classList.add('hidden');
+            updateReplayControls();
+        }
+
+        function showGameOverOverlay() {
+            if (!isGameOver) return;
+            document.getElementById('gameover-overlay').classList.remove('hidden');
+            updateReplayControls();
         }
 
         /*************************************************************************
@@ -1905,7 +2024,9 @@
         function updatePlayerBars() {
             const topColor = boardFlipped ? 'w' : 'b';
             const bottomColor = boardFlipped ? 'b' : 'w';
-            const currentTurn = chess.turn();
+            const { instance: activeChess } = getViewChessInstance();
+            const currentTurn = activeChess.turn();
+            const isPast = isViewingPastMove();
 
             const topNameEl = document.getElementById('top-player-name');
             const bottomNameEl = document.getElementById('bottom-player-name');
@@ -1964,7 +2085,7 @@
             const topBar = document.getElementById('top-player-bar');
             const bottomBar = document.getElementById('bottom-player-bar');
 
-            if (currentTurn === topColor && !isGameOver) {
+            if (currentTurn === topColor && !isGameOver && !isPast) {
                 topTurnTag.classList.remove('hidden');
                 topTurnTag.textContent = (gameMode === 'online' && topColor === myColor) ? 'Lượt của bạn' : 'Đang đi';
                 topBar.classList.add('active-turn-badge');
@@ -1973,7 +2094,7 @@
                 topBar.classList.remove('active-turn-badge');
             }
 
-            if (currentTurn === bottomColor && !isGameOver) {
+            if (currentTurn === bottomColor && !isGameOver && !isPast) {
                 bottomTurnTag.classList.remove('hidden');
                 bottomTurnTag.textContent = (gameMode === 'online' && bottomColor === myColor) ? 'Lượt của bạn' : 'Đang đi';
                 bottomBar.classList.add('active-turn-badge');
@@ -1996,7 +2117,8 @@
                 b: { p: 0, n: 0, b: 0, r: 0, q: 0 }
             };
 
-            const board = chess.board();
+            const { instance: activeChess } = getViewChessInstance();
+            const board = activeChess.board();
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
                     const p = board[r][c];
@@ -2063,18 +2185,37 @@
                 return;
             }
 
+            const activeIdx = getActiveReplayIndex();
+            const canJump = isGameOver || gameMode === 'local' || gameMode === 'idle';
+
             let html = '';
             for (let i = 0; i < history.length; i += 2) {
                 const moveNum = Math.floor(i / 2) + 1;
                 const whiteMove = history[i] || '';
                 const blackMove = history[i + 1] || '';
-                const isLastRow = (i + 2 >= history.length);
+
+                const wIdx = i + 1;
+                const bIdx = i + 2;
+
+                const wActive = activeIdx === wIdx;
+                const bActive = blackMove && activeIdx === bIdx;
+
+                const wClass = wActive
+                    ? 'bg-sky-500/30 text-sky-100 border border-sky-400/50 rounded px-1.5 py-0.5 font-bold'
+                    : (canJump ? 'hover:bg-slate-700/60 rounded px-1.5 py-0.5 cursor-pointer text-slate-200' : 'text-slate-300 px-1.5 py-0.5');
+
+                const bClass = bActive
+                    ? 'bg-sky-500/30 text-sky-100 border border-sky-400/50 rounded px-1.5 py-0.5 font-bold'
+                    : (blackMove && canJump ? 'hover:bg-slate-700/60 rounded px-1.5 py-0.5 cursor-pointer text-slate-200' : 'text-slate-300 px-1.5 py-0.5');
+
+                const wClick = canJump ? `onclick="goToReplayIndex(${wIdx})"` : '';
+                const bClick = (blackMove && canJump) ? `onclick="goToReplayIndex(${bIdx})"` : '';
 
                 html += `
-                    <div class="grid grid-cols-12 items-center px-2.5 py-1.5 rounded-lg ${isLastRow ? 'bg-sky-500/20 text-sky-200 border border-sky-400/25' : 'hover:bg-slate-800/50 text-slate-300'}">
+                    <div class="grid grid-cols-12 items-center px-2 py-1 rounded-lg hover:bg-slate-800/40">
                         <span class="col-span-2 text-slate-500">${moveNum}.</span>
-                        <span class="col-span-5 font-semibold">${whiteMove}</span>
-                        <span class="col-span-5 font-semibold">${blackMove}</span>
+                        <span class="col-span-5 font-semibold ${wClass}" ${wClick}>${whiteMove}</span>
+                        <span class="col-span-5 font-semibold ${bClass}" ${bClick}>${blackMove}</span>
                     </div>
                 `;
             }
