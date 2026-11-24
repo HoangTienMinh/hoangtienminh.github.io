@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cổng Cấp Key Role - Hoang Tien Minh</title>
-    <link rel="icon" type="image/png" sizes="512x512" href="https://uxwing.com/wp-content/themes/uxwing/download/household-and-furniture/access-key-blue-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 
@@ -208,13 +207,13 @@
             </span>
         </div>
 
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] sm:text-xs font-semibold text-emerald-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 status-dot-pulse"></span>
-            <span>Sẵn Sàng</span>
+        <div id="header-status-badge" class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] sm:text-xs font-semibold text-emerald-300">
+            <span id="header-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 status-dot-pulse"></span>
+            <span id="header-status-text">Sẵn Sàng</span>
         </div>
     </header>
 
-    <!-- Main Center Key Card (Static) -->
+    <!-- Main Center Key Card -->
     <main class="relative z-10 w-full max-w-xl my-auto py-8">
         <div class="cosmic-card rounded-3xl p-6 sm:p-10 text-center">
             <!-- Decorative Top Icon Halo -->
@@ -269,16 +268,34 @@
                 </button>
             </div>
 
-            <!-- Metadata Footer Badges inside Card (Without Expiry Timer) -->
-            <div class="grid grid-cols-2 gap-3 pt-5 border-t border-slate-700/40 text-left">
+            <!-- Metadata Footer Badges inside Card: 1. Hạn Sử Dụng -> 2. Trạng Thái -> 3. Cấp Độ -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-slate-700/40 text-left">
+                <!-- 1. Hạn Sử Dụng -->
+                <div class="p-3 rounded-xl bg-slate-950/55 border border-sky-500/25 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-0.5">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400">Hạn Sử Dụng</p>
+                        <svg class="w-3.5 h-3.5 text-sky-400/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p id="expiry-date-label" class="text-xs sm:text-sm font-bold text-sky-300">
+                        29/11/2026
+                    </p>
+                    <p id="countdown-timer" style="font-family: 'JetBrains Mono', monospace;" class="text-[11px] font-semibold text-amber-300/95 mt-0.5 tracking-tight">
+                        Còn -- ngày --:--:--
+                    </p>
+                </div>
+
+                <!-- 2. Trạng Thái -->
                 <div class="p-3 rounded-xl bg-slate-950/55 border border-slate-800/80">
                     <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Trạng Thái</p>
-                    <p class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <p id="card-status-text" class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                        <span id="card-status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                         Hoạt Động
                     </p>
                 </div>
 
+                <!-- 3. Cấp Độ -->
                 <div class="p-3 rounded-xl bg-slate-950/55 border border-slate-800/80">
                     <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Cấp Độ</p>
                     <p class="text-xs sm:text-sm font-bold text-violet-300">
@@ -291,7 +308,7 @@
 
     <!-- Bottom Subtle Footer -->
     <footer class="relative z-10 text-center text-[11px] sm:text-xs text-slate-400/80">
-        Key Mở Khóa Role Server Discord  • Developer By Hoàng Tiến Minh
+        Key Mở Khóa Role Server Discord • Developer By Hoàng Tiến Minh
     </footer>
 
     <!-- Toast Notification Container -->
@@ -523,9 +540,10 @@
         })();
 
         /*************************************************************************
-         * 2. CẤU HÌNH KEY CỐ ĐỊNH (BẠN CÓ THỂ SỬA MÃ KEY TRỰC TIẾP TẠI ĐÂY)
+         * 2. CẤU HÌNH KEY & HẠN SỬ DỤNG (SỬA TRỰC TIẾP TẠI ĐÂY)
          *************************************************************************/
         const DEFAULT_KEY = 'HTM-DXC-92947-JQIDA'; // <-- Sửa mã key của bạn ở đây
+        const EXPIRY_DATE_STR = '2026-11-29T23:59:59+07:00'; // Hạn sử dụng đến hết ngày 29/11/2026
 
         let currentKey = DEFAULT_KEY;
         let scrambleInterval = null;
@@ -545,22 +563,62 @@
             return DEFAULT_KEY;
         }
 
+        function startExpiryCountdown() {
+            const expiryTime = new Date(EXPIRY_DATE_STR).getTime();
+            const countdownEl = document.getElementById('countdown-timer');
+            const cardStatusText = document.getElementById('card-status-text');
+            const headerBadge = document.getElementById('header-status-badge');
+            const headerDot = document.getElementById('header-status-dot');
+            const headerText = document.getElementById('header-status-text');
+
+            function updateTimer() {
+                const now = Date.now();
+                const diff = expiryTime - now;
+
+                if (diff <= 0) {
+                    if (countdownEl) {
+                        countdownEl.textContent = 'Đã hết hạn sử dụng';
+                        countdownEl.className = 'text-[11px] font-semibold text-rose-400 mt-0.5 tracking-tight';
+                    }
+                    if (cardStatusText) {
+                        cardStatusText.className = 'text-xs sm:text-sm font-bold text-rose-400 flex items-center gap-1.5';
+                        cardStatusText.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Hết Hạn';
+                    }
+                    if (headerBadge && headerDot && headerText) {
+                        headerBadge.className = 'flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-500/30 text-[11px] sm:text-xs font-semibold text-rose-300';
+                        headerDot.className = 'w-2 h-2 rounded-full bg-rose-400';
+                        headerText.textContent = 'Hết Hạn';
+                    }
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                const pad = (n) => String(n).padStart(2, '0');
+                if (countdownEl) {
+                    countdownEl.textContent = `Còn ${days} ngày ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+                }
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
         function buildUnlockOrder(length) {
             const indices = Array.from({ length }, (_, i) => i);
             const mode = Math.floor(Math.random() * 4);
 
             if (mode === 0) {
-                // Từ trái sang phải
                 return indices;
             } else if (mode === 1) {
-                // Từ phải sang trái
                 return indices.reverse();
             } else if (mode === 2) {
-                // Từ giữa tỏa ra hai bên
                 const center = (length - 1) / 2;
                 return indices.sort((a, b) => Math.abs(a - center) - Math.abs(b - center));
             } else {
-                // Ngẫu nhiên từng ký tự (Fisher-Yates shuffle)
                 for (let i = indices.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [indices[i], indices[j]] = [indices[j], indices[i]];
@@ -579,7 +637,7 @@
 
             const unlockOrder = buildUnlockOrder(targetKey.length);
             const pool = CHAR_POOLS[Math.floor(Math.random() * CHAR_POOLS.length)];
-            const totalDuration = 3000; // Kéo dài 3 giây hiệu ứng tìm & giải mã key
+            const totalDuration = 3000;
             const startTime = performance.now();
 
             if (statusText) statusText.textContent = 'ĐANG DÒ TÌM MÃ KEY...';
@@ -590,8 +648,6 @@
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(1, elapsed / totalDuration);
 
-                // Giai đoạn đầu (30% thời gian đầu): toàn bộ ký tự nhảy loạn tìm kiếm
-                // Giai đoạn sau (70% thời gian còn lại): lần lượt khóa từng ký tự theo mẫu ngẫu nhiên
                 const lockProgress = progress < 0.30 ? 0 : (progress - 0.30) / 0.70;
                 const unlockedCount = Math.floor(lockProgress * targetKey.length);
                 const unlockedSet = new Set(unlockOrder.slice(0, unlockedCount));
@@ -687,13 +743,11 @@
             const btn = document.getElementById('btn-copy-key');
             createButtonRipple(btn, event);
 
-            // Spawn sparkle burst at click or button center
             const rect = btn.getBoundingClientRect();
             const burstX = (event && event.clientX) ? event.clientX : rect.left + rect.width / 2;
             const burstY = (event && event.clientY) ? event.clientY : rect.top + rect.height / 2;
             spawnSparkleBurst(burstX, burstY);
 
-            // Update button state
             document.getElementById('icon-copy').classList.add('hidden');
             document.getElementById('icon-check').classList.remove('hidden');
             document.getElementById('copy-btn-label').textContent = 'Đã Sao Chép!';
@@ -725,6 +779,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             currentKey = resolveConfiguredKey();
             scrambleRevealKey(currentKey);
+            startExpiryCountdown();
         });
     </script>
 </body>
