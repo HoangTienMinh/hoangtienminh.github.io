@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Cấp Key Bảo Mật - Cosmic Aurora</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #03050f;
+            --cyan-glow: rgba(56, 189, 248, 0.45);
+            --emerald-glow: rgba(52, 211, 153, 0.4);
+            --violet-glow: rgba(167, 139, 250, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at bottom, #0d1936 0%, #050a1a 56%, #02040a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Cosmic Canvas Background */
+        #cosmic-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Ambient Nebula Orbs */
+        @keyframes orbDrift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(35px, -25px) scale(1.08); }
+            66% { transform: translate(-25px, 20px) scale(0.95); }
+        }
+
+        .ambient-orb {
+            position: fixed;
+            border-radius: 9999px;
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 1;
+            animation: orbDrift 18s ease-in-out infinite;
+        }
+
+        /* Slow Cosmic Shimmer Text */
+        @keyframes slowCosmicTextFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cosmic-shimmer-text {
+            background: linear-gradient(
+                115deg,
+                #f8fafc 0%,
+                #bae6fd 20%,
+                #6ee7b7 42%,
+                #7dd3fc 65%,
+                #c4b5fd 85%,
+                #f8fafc 100%
+            );
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: slowCosmicTextFlow 12s ease-in-out infinite;
+        }
+
+        .cosmic-key-text {
+            background: linear-gradient(
+                110deg,
+                #e0f2fe 0%,
+                #6ee7b7 30%,
+                #38bdf8 60%,
+                #c4b5fd 85%,
+                #e0f2fe 100%
+            );
+            background-size: 260% 260%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: slowCosmicTextFlow 9s ease-in-out infinite;
+            text-shadow: 0 0 28px rgba(56, 189, 248, 0.25);
+        }
+
+        /* Static Glassmorphism Card */
+        .cosmic-card {
+            position: relative;
+            background: rgba(10, 17, 34, 0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.26);
+            box-shadow:
+                0 30px 60px -15px rgba(0, 0, 0, 0.85),
+                0 0 50px rgba(56, 189, 248, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Static Glowing Border around Key Box */
+        .key-box-outer {
+            position: relative;
+            padding: 1.5px;
+            border-radius: 1.25rem;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.65), rgba(52, 211, 153, 0.45), rgba(129, 140, 248, 0.6));
+            box-shadow:
+                0 0 32px rgba(56, 189, 248, 0.18),
+                inset 0 0 18px rgba(52, 211, 153, 0.08);
+        }
+
+        .key-box-inner {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(160deg, rgba(6, 11, 25, 0.96) 0%, rgba(12, 20, 42, 0.94) 100%);
+            border-radius: calc(1.25rem - 1.5px);
+        }
+
+        /* Button Ripple & Glow */
+        .btn-cosmic-primary {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0284c7 0%, #0d9488 50%, #4f46e5 100%);
+            background-size: 200% 200%;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-cosmic-primary:hover {
+            background-position: 100% 50%;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 32px -5px rgba(52, 211, 153, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-cosmic-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleAnim 0.65s linear;
+            background-color: rgba(255, 255, 255, 0.42);
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Particle Burst on Copy */
+        .burst-particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 9999px;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        /* Pulse Badge */
+        @keyframes pulseHalo {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45); }
+            50% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
+        }
+
+        .status-dot-pulse {
+            animation: pulseHalo 2.2s infinite;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col items-center justify-between min-h-screen px-4 py-6 sm:py-10">
+
+    <!-- Animated Cosmic Aurora, Starfield & Floating Dust Canvas -->
+    <canvas id="cosmic-canvas"></canvas>
+
+    <!-- Ambient Glowing Nebulas -->
+    <div class="ambient-orb w-80 h-80 bg-sky-500/20 top-[-4rem] left-[-4rem]"></div>
+    <div class="ambient-orb w-96 h-96 bg-emerald-500/15 bottom-[-5rem] right-[-5rem]" style="animation-delay: -6s;"></div>
+    <div class="ambient-orb w-72 h-72 bg-indigo-500/15 top-[38%] right-[12%]" style="animation-delay: -11s;"></div>
+
+    <!-- Top Minimal Status Bar -->
+    <header class="relative z-10 w-full max-w-2xl flex items-center justify-between px-4 py-2.5 rounded-2xl bg-slate-950/55 border border-sky-500/20 backdrop-blur-md shadow-lg">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 via-teal-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/25 border border-sky-300/30">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                </svg>
+            </div>
+            <span class="text-xs sm:text-sm font-bold tracking-wider uppercase cosmic-shimmer-text">
+                COSMIC KEY • DEV BY HOÀNG TIẾN MINH
+            </span>
+        </div>
+
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] sm:text-xs font-semibold text-emerald-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 status-dot-pulse"></span>
+            <span>Sẵn Sàng</span>
+        </div>
+    </header>
+
+    <!-- Main Center Key Card (Static) -->
+    <main class="relative z-10 w-full max-w-xl my-auto py-8">
+        <div class="cosmic-card rounded-3xl p-6 sm:p-10 text-center">
+            <!-- Decorative Top Icon Halo -->
+            <div class="relative inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-sky-500/20 via-teal-500/20 to-indigo-600/20 border border-sky-400/35 shadow-xl shadow-sky-500/15 mb-5">
+                <div class="absolute inset-0 rounded-2xl bg-sky-400/10 blur-md"></div>
+                <svg class="relative w-8 h-8 sm:w-10 sm:h-10 text-sky-300 drop-shadow-[0_0_12px_rgba(56,189,248,0.65)]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/>
+                </svg>
+            </div>
+
+            <!-- Main Requested Title -->
+            <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.28em] text-sky-300/80 mb-2">
+                MÃ KÍCH HOẠT TRUY CẬP
+            </p>
+            <h1 class="text-2xl sm:text-4xl font-black tracking-wide uppercase cosmic-shimmer-text mb-2">
+                KEY CỦA BẠN LÀ
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300/90 max-w-md mx-auto mb-7 leading-relaxed">
+                Nhấn nút bên dưới để sao chép mã kích hoạt của bạn. Vui lòng giữ bảo mật mã này.
+            </p>
+
+            <!-- Static Glowing Key Display Frame -->
+            <div class="key-box-outer mb-6">
+                <div class="key-box-inner px-4 py-5 sm:px-6 sm:py-6 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-2">
+                        <span id="scan-dot-left" class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping"></span>
+                        <span id="scan-status-text">ĐANG DÒ TÌM MÃ KEY...</span>
+                        <span id="scan-dot-right" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    </div>
+
+                    <!-- Displayed Key Text -->
+                    <div id="key-display"
+                        onclick="copyKeyWithEffects(event)"
+                        title="Nhấn để sao chép nhanh"
+                        style="font-family: 'JetBrains Mono', monospace;"
+                        class="cursor-pointer select-all text-lg sm:text-2xl md:text-[26px] font-extrabold tracking-wider sm:tracking-[0.14em] cosmic-key-text py-1 px-2 rounded-lg break-all">
+                        COSMIC-XXXX-XXXX-XXXX
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Copy Action Button -->
+            <div class="flex items-center justify-center mb-7">
+                <button id="btn-copy-key" onclick="copyKeyWithEffects(event)" class="btn-cosmic-primary w-full sm:w-72 py-3.5 px-7 rounded-2xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 cursor-pointer">
+                    <svg id="icon-copy" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <svg id="icon-check" class="w-5 h-5 hidden text-emerald-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span id="copy-btn-label">Sao Chép Key</span>
+                </button>
+            </div>
+
+            <!-- Metadata Footer Badges inside Card (Without Expiry Timer) -->
+            <div class="grid grid-cols-2 gap-3 pt-5 border-t border-slate-700/40 text-left">
+                <div class="p-3 rounded-xl bg-slate-950/55 border border-slate-800/80">
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Trạng Thái</p>
+                    <p class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Hoạt Động
+                    </p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/55 border border-slate-800/80">
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Cấp Độ</p>
+                    <p class="text-xs sm:text-sm font-bold text-violet-300">
+                        Premium VIP
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Subtle Footer -->
+    <footer class="relative z-10 text-center text-[11px] sm:text-xs text-slate-400/80">
+        Key Mở Khóa Role Server Discord  • Developer By Hoàng Tiến Minh
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+    <script>
+        /*************************************************************************
+         * 1. COSMIC AURORA, STARFIELD, SHOOTING STARS & FLOATING DUST ENGINE
+         *************************************************************************/
+        (function initCosmicScene() {
+            const canvas = document.getElementById('cosmic-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let stars = [];
+            let dustParticles = [];
+            let shootingStars = [];
+            let time = 0;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+
+                const starCount = Math.min(200, Math.floor((width * height) / 6200));
+                const palette = [
+                    '226, 232, 240',
+                    '125, 211, 252',
+                    '110, 231, 183',
+                    '196, 181, 253'
+                ];
+
+                stars = Array.from({ length: starCount }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 1.6 + 0.3,
+                    alpha: Math.random() * 0.75 + 0.2,
+                    speed: Math.random() * 0.008 + 0.002,
+                    color: palette[Math.floor(Math.random() * palette.length)]
+                }));
+
+                const dustCount = Math.min(45, Math.floor(width / 28));
+                dustParticles = Array.from({ length: dustCount }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 2.2 + 0.8,
+                    vx: (Math.random() - 0.5) * 0.35,
+                    vy: -Math.random() * 0.45 - 0.12,
+                    alpha: Math.random() * 0.45 + 0.15,
+                    color: Math.random() > 0.5 ? '56, 189, 248' : '52, 211, 153'
+                }));
+            }
+
+            function spawnShootingStar() {
+                const startX = Math.random() * width * 0.85 + width * 0.05;
+                const startY = Math.random() * height * 0.35;
+                const angle = (Math.PI / 5) + (Math.random() * 0.22 - 0.11);
+                const speed = Math.random() * 6 + 7;
+                shootingStars.push({
+                    x: startX,
+                    y: startY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    length: Math.random() * 105 + 80,
+                    life: 0,
+                    maxLife: Math.random() * 40 + 46,
+                    hue: Math.random() > 0.4 ? '165, 243, 252' : '167, 243, 208'
+                });
+            }
+
+            function drawAuroraRibbon(t, baseY, orbitRx, orbitRy, amp1, amp2, freq1, freq2, thickness, colorStops) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                ctx.filter = 'blur(48px)';
+
+                const driftX = Math.cos(t * 0.45) * orbitRx;
+                const driftY = Math.sin(t * 0.38) * orbitRy;
+                const step = 44;
+
+                ctx.beginPath();
+                ctx.moveTo(-140, height + 100);
+
+                for (let x = -140; x <= width + 140; x += step) {
+                    const nx = x + driftX;
+                    const y = baseY + driftY
+                        + Math.sin(nx * freq1 + t) * amp1
+                        + Math.cos(nx * freq2 - t * 0.65) * amp2;
+                    ctx.lineTo(x, y);
+                }
+
+                for (let x = width + 140; x >= -140; x -= step) {
+                    const nx = x + driftX;
+                    const y = baseY + driftY + thickness
+                        + Math.sin(nx * freq1 + t + 0.9) * (amp1 * 0.88)
+                        + Math.cos(nx * freq2 - t * 0.55) * (amp2 * 0.88);
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.closePath();
+
+                const grad = ctx.createLinearGradient(
+                    Math.max(0, driftX),
+                    baseY + driftY - amp1,
+                    width + driftX,
+                    baseY + driftY + thickness + amp1
+                );
+                for (const [stop, color] of colorStops) {
+                    grad.addColorStop(stop, color);
+                }
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function draw() {
+                time += 0.0026;
+                ctx.clearRect(0, 0, width, height);
+
+                // Nebula Glow
+                const nebulaX = width * 0.5 + Math.cos(time * 0.35) * (width * 0.14);
+                const nebulaY = height * 0.34 + Math.sin(time * 0.28) * (height * 0.09);
+                const nebula = ctx.createRadialGradient(
+                    nebulaX, nebulaY, 30,
+                    width * 0.5, height * 0.45, Math.max(width, height) * 0.85
+                );
+                nebula.addColorStop(0, 'rgba(13, 148, 136, 0.16)');
+                nebula.addColorStop(0.45, 'rgba(30, 64, 175, 0.15)');
+                nebula.addColorStop(0.8, 'rgba(76, 29, 149, 0.1)');
+                nebula.addColorStop(1, 'rgba(4, 6, 18, 0)');
+                ctx.fillStyle = nebula;
+                ctx.fillRect(0, 0, width, height);
+
+                // Aurora Ribbons
+                drawAuroraRibbon(
+                    time, height * 0.18, 95, 28, 46, 26, 0.0020, 0.0038, 145,
+                    [
+                        [0.0, 'rgba(52, 211, 153, 0.02)'],
+                        [0.24, 'rgba(52, 211, 153, 0.22)'],
+                        [0.52, 'rgba(56, 189, 248, 0.26)'],
+                        [0.80, 'rgba(139, 92, 246, 0.18)'],
+                        [1.0, 'rgba(56, 189, 248, 0.02)']
+                    ]
+                );
+
+                drawAuroraRibbon(
+                    time * 0.82 + 2.1, height * 0.46, 110, 34, 52, 30, 0.0017, 0.0032, 165,
+                    [
+                        [0.0, 'rgba(56, 189, 248, 0.02)'],
+                        [0.28, 'rgba(14, 165, 233, 0.22)'],
+                        [0.60, 'rgba(45, 212, 191, 0.20)'],
+                        [0.86, 'rgba(129, 140, 248, 0.15)'],
+                        [1.0, 'rgba(56, 189, 248, 0.02)']
+                    ]
+                );
+
+                // Twinkling Stars
+                for (const s of stars) {
+                    s.alpha += s.speed;
+                    if (s.alpha > 0.94 || s.alpha < 0.15) s.speed = -s.speed;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${s.color}, ${s.alpha.toFixed(2)})`;
+                    ctx.fill();
+                }
+
+                // Floating Cosmic Dust
+                for (const d of dustParticles) {
+                    d.x += d.vx;
+                    d.y += d.vy;
+                    if (d.y < -10) {
+                        d.y = height + 10;
+                        d.x = Math.random() * width;
+                    }
+                    if (d.x < -10) d.x = width + 10;
+                    if (d.x > width + 10) d.x = -10;
+
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${d.color}, ${d.alpha})`;
+                    ctx.fill();
+                }
+
+                // Shooting Stars
+                if (shootingStars.length < 2 && Math.random() < 0.0045) {
+                    spawnShootingStar();
+                }
+
+                for (let i = shootingStars.length - 1; i >= 0; i--) {
+                    const st = shootingStars[i];
+                    st.x += st.vx;
+                    st.y += st.vy;
+                    st.life++;
+
+                    const progress = st.life / st.maxLife;
+                    const opacity = Math.sin(progress * Math.PI) * 0.85;
+                    const speedMag = Math.hypot(st.vx, st.vy);
+                    const tailX = st.x - (st.vx / speedMag) * st.length;
+                    const tailY = st.y - (st.vy / speedMag) * st.length;
+
+                    const grad = ctx.createLinearGradient(st.x, st.y, tailX, tailY);
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${opacity.toFixed(3)})`);
+                    grad.addColorStop(0.28, `rgba(${st.hue}, ${(opacity * 0.65).toFixed(3)})`);
+                    grad.addColorStop(1, `rgba(${st.hue}, 0)`);
+
+                    ctx.save();
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 1.7;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(st.x, st.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(st.x, st.y, 1.8, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${opacity.toFixed(3)})`;
+                    ctx.fill();
+                    ctx.restore();
+
+                    if (st.life >= st.maxLife || st.x > width + 150 || st.y > height + 150) {
+                        shootingStars.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /*************************************************************************
+         * 2. CẤU HÌNH KEY CỐ ĐỊNH (BẠN CÓ THỂ SỬA MÃ KEY TRỰC TIẾP TẠI ĐÂY)
+         *************************************************************************/
+        const DEFAULT_KEY = 'HTM-DXC-92947-JQIDA'; // <-- Sửa mã key của bạn ở đây
+
+        let currentKey = DEFAULT_KEY;
+        let scrambleInterval = null;
+        const CHAR_POOLS = [
+            'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+            '0123456789ABCDEF@#$%&*?!',
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+            'XZQWYKJHGFDSAPOIYTREWQ987654321'
+        ];
+
+        function resolveConfiguredKey() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlKey = urlParams.get('key');
+            if (urlKey && urlKey.trim().length > 0) {
+                return urlKey.trim().slice(0, 64);
+            }
+            return DEFAULT_KEY;
+        }
+
+        function buildUnlockOrder(length) {
+            const indices = Array.from({ length }, (_, i) => i);
+            const mode = Math.floor(Math.random() * 4);
+
+            if (mode === 0) {
+                // Từ trái sang phải
+                return indices;
+            } else if (mode === 1) {
+                // Từ phải sang trái
+                return indices.reverse();
+            } else if (mode === 2) {
+                // Từ giữa tỏa ra hai bên
+                const center = (length - 1) / 2;
+                return indices.sort((a, b) => Math.abs(a - center) - Math.abs(b - center));
+            } else {
+                // Ngẫu nhiên từng ký tự (Fisher-Yates shuffle)
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                return indices;
+            }
+        }
+
+        function scrambleRevealKey(targetKey) {
+            const el = document.getElementById('key-display');
+            const statusText = document.getElementById('scan-status-text');
+            const dotLeft = document.getElementById('scan-dot-left');
+            const dotRight = document.getElementById('scan-dot-right');
+            if (!el) return;
+            if (scrambleInterval) clearInterval(scrambleInterval);
+
+            const unlockOrder = buildUnlockOrder(targetKey.length);
+            const pool = CHAR_POOLS[Math.floor(Math.random() * CHAR_POOLS.length)];
+            const totalDuration = 3000; // Kéo dài 3 giây hiệu ứng tìm & giải mã key
+            const startTime = performance.now();
+
+            if (statusText) statusText.textContent = 'ĐANG DÒ TÌM MÃ KEY...';
+            if (dotLeft) dotLeft.classList.add('animate-ping');
+            if (dotRight) dotRight.classList.add('animate-ping');
+
+            scrambleInterval = setInterval(() => {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(1, elapsed / totalDuration);
+
+                // Giai đoạn đầu (30% thời gian đầu): toàn bộ ký tự nhảy loạn tìm kiếm
+                // Giai đoạn sau (70% thời gian còn lại): lần lượt khóa từng ký tự theo mẫu ngẫu nhiên
+                const lockProgress = progress < 0.30 ? 0 : (progress - 0.30) / 0.70;
+                const unlockedCount = Math.floor(lockProgress * targetKey.length);
+                const unlockedSet = new Set(unlockOrder.slice(0, unlockedCount));
+
+                el.textContent = targetKey
+                    .split('')
+                    .map((char, index) => {
+                        if (char === '-') return '-';
+                        if (unlockedSet.has(index) || progress >= 1) return targetKey[index];
+                        return pool[Math.floor(Math.random() * pool.length)];
+                    })
+                    .join('');
+
+                if (progress >= 1) {
+                    clearInterval(scrambleInterval);
+                    el.textContent = targetKey;
+                    if (statusText) statusText.textContent = 'VIP ACCESS TOKEN • 256-BIT';
+                    if (dotLeft) dotLeft.classList.remove('animate-ping');
+                    if (dotRight) dotRight.classList.remove('animate-ping');
+                }
+            }, 34);
+        }
+
+        function createButtonRipple(btn, event) {
+            if (!btn || !event || typeof event.clientX !== 'number') return;
+            const rect = btn.getBoundingClientRect();
+            const circle = document.createElement('span');
+            const diameter = Math.max(rect.width, rect.height);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - rect.left - radius}px`;
+            circle.style.top = `${event.clientY - rect.top - radius}px`;
+            circle.classList.add('ripple-circle');
+
+            const oldRipple = btn.querySelector('.ripple-circle');
+            if (oldRipple) oldRipple.remove();
+            btn.appendChild(circle);
+        }
+
+        function spawnSparkleBurst(x, y) {
+            const colors = ['#38bdf8', '#34d399', '#a5b4fc', '#f8fafc', '#6ee7b7'];
+            const count = 22;
+
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'burst-particle';
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+                p.style.backgroundColor = colors[i % colors.length];
+                p.style.boxShadow = `0 0 8px ${colors[i % colors.length]}`;
+                document.body.appendChild(p);
+
+                const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.3);
+                const velocity = Math.random() * 65 + 35;
+                const dx = Math.cos(angle) * velocity;
+                const dy = Math.sin(angle) * velocity;
+
+                p.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 580 + Math.random() * 200,
+                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                }).onfinish = () => p.remove();
+            }
+        }
+
+        function copyTextSafe(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {}
+            document.body.removeChild(textarea);
+        }
+
+        let copyResetTimeout = null;
+        function resetCopyButtonUI() {
+            document.getElementById('icon-copy').classList.remove('hidden');
+            document.getElementById('icon-check').classList.add('hidden');
+            document.getElementById('copy-btn-label').textContent = 'Sao Chép Key';
+        }
+
+        function copyKeyWithEffects(event) {
+            if (!currentKey) return;
+            copyTextSafe(currentKey);
+
+            const btn = document.getElementById('btn-copy-key');
+            createButtonRipple(btn, event);
+
+            // Spawn sparkle burst at click or button center
+            const rect = btn.getBoundingClientRect();
+            const burstX = (event && event.clientX) ? event.clientX : rect.left + rect.width / 2;
+            const burstY = (event && event.clientY) ? event.clientY : rect.top + rect.height / 2;
+            spawnSparkleBurst(burstX, burstY);
+
+            // Update button state
+            document.getElementById('icon-copy').classList.add('hidden');
+            document.getElementById('icon-check').classList.remove('hidden');
+            document.getElementById('copy-btn-label').textContent = 'Đã Sao Chép!';
+
+            if (copyResetTimeout) clearTimeout(copyResetTimeout);
+            copyResetTimeout = setTimeout(resetCopyButtonUI, 2400);
+
+            showToast(`Đã sao chép Key: ${currentKey}`, 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const styles = {
+                info: 'bg-slate-900/95 border-sky-400/50 text-sky-100',
+                success: 'bg-slate-900/95 border-emerald-500/60 text-emerald-200'
+            };
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-2xl backdrop-blur-md text-xs sm:text-sm font-semibold text-center transition-all duration-300 ${styles[type] || styles.info}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(8px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            currentKey = resolveConfiguredKey();
+            scrambleRevealKey(currentKey);
+        });
+    </script>
+</body>
+</html>
