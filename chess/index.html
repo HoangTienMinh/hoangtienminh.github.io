@@ -7,7 +7,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="32x32" href="https://play-lh.googleusercontent.com/XkdV-KenuxGtZ2YDDoW5onmZO_n2GT_3vBWzvAGZ5cnaP9b4DZPYM0dw-SNAZkQC77I=w256">
     <!-- Chess.js (Full International Chess Rules Engine) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -46,15 +46,9 @@
 
         /* Slow, Chill Cosmic Text Color Flow Animation */
         @keyframes slowCosmicTextFlow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .cosmic-shimmer-text {
@@ -144,15 +138,9 @@
             transition: background-color 0.15s ease;
         }
 
-        .square.light {
-            background-color: #cbd5e1;
-        }
+        .square.light { background-color: #cbd5e1; }
+        .square.dark { background-color: #334155; }
 
-        .square.dark {
-            background-color: #334155;
-        }
-
-        /* Soft Sky-Blue Last Move Trail Harmonized with Aurora Sky */
         .square.last-move::after {
             content: '';
             position: absolute;
@@ -193,9 +181,7 @@
             transition: transform 0.12s ease;
         }
 
-        .square:hover .legal-dot {
-            transform: scale(1.25);
-        }
+        .square:hover .legal-dot { transform: scale(1.25); }
 
         .legal-capture {
             position: absolute;
@@ -207,9 +193,7 @@
             transition: transform 0.12s ease;
         }
 
-        .square:hover .legal-capture {
-            transform: scale(1.06);
-        }
+        .square:hover .legal-capture { transform: scale(1.06); }
 
         /* Chess Pieces SVG */
         .piece {
@@ -221,13 +205,8 @@
             pointer-events: none;
         }
 
-        .square:hover .piece {
-            transform: translateY(-2px) scale(1.04);
-        }
-
-        .square.selected .piece {
-            transform: translateY(-3px) scale(1.06);
-        }
+        .square:hover .piece { transform: translateY(-2px) scale(1.04); }
+        .square.selected .piece { transform: translateY(-3px) scale(1.06); }
 
         /* Board Coordinates */
         .coord-rank {
@@ -252,30 +231,14 @@
             z-index: 5;
         }
 
-        .square.light .coord-rank, .square.light .coord-file {
-            color: #334155;
-        }
-
-        .square.dark .coord-rank, .square.dark .coord-file {
-            color: #cbd5e1;
-        }
+        .square.light .coord-rank, .square.light .coord-file { color: #334155; }
+        .square.dark .coord-rank, .square.dark .coord-file { color: #cbd5e1; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(56, 189, 248, 0.42);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(56, 189, 248, 0.7);
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.42); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.7); }
 
         @keyframes pulseCosmic {
             0%, 100% { box-shadow: 0 0 14px rgba(56, 189, 248, 0.35), 0 0 24px rgba(52, 211, 153, 0.18); }
@@ -284,6 +247,14 @@
         .active-turn-badge {
             animation: pulseCosmic 2.6s infinite ease-in-out;
             border-color: rgba(56, 189, 248, 0.55) !important;
+        }
+
+        @keyframes lowTimePulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(244, 63, 94, 0.35); }
+            50% { box-shadow: 0 0 18px rgba(244, 63, 94, 0.85); }
+        }
+        .clock-low-time {
+            animation: lowTimePulse 1s infinite ease-in-out;
         }
     </style>
 </head>
@@ -335,16 +306,16 @@
     <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6">
         <div class="flex flex-col items-center w-full lg:w-auto gap-3">
             <!-- Top Player Bar -->
-            <div id="top-player-bar" class="w-full max-w-[calc(min(86vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
-                <div class="flex items-center gap-3">
-                    <div id="top-avatar" class="w-10 h-10 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner">
+            <div id="top-player-bar" class="w-full max-w-[calc(min(86vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between gap-2 transition-all">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div id="top-avatar" class="w-10 h-10 shrink-0 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner">
                         Đ
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <button onclick="handlePlayerBarNameClick('top')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-slate-100 hover:text-sky-300 transition text-left">
-                                <span id="top-player-name">Đang chờ đối thủ...</span>
-                                <svg id="top-edit-icon" class="w-3.5 h-3.5 text-slate-400 group-hover:text-sky-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <button onclick="handlePlayerBarNameClick('top')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-slate-100 hover:text-sky-300 transition text-left truncate">
+                                <span id="top-player-name" class="truncate">Đang chờ đối thủ...</span>
+                                <svg id="top-edit-icon" class="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-sky-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                 </svg>
                             </button>
@@ -354,7 +325,13 @@
                         <div id="top-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-sm text-slate-200 mt-0.5"></div>
                     </div>
                 </div>
-                <div id="top-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div id="top-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
+                    <!-- Top Chess Clock -->
+                    <div id="top-clock" class="font-mono text-base sm:text-lg font-extrabold px-3 py-1.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-400 tracking-wider min-w-[78px] text-center transition-all">
+                        05:00
+                    </div>
+                </div>
             </div>
 
             <!-- Chessboard -->
@@ -386,16 +363,16 @@
             </div>
 
             <!-- Bottom Player Bar -->
-            <div id="bottom-player-bar" class="w-full max-w-[calc(min(86vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between transition-all">
-                <div class="flex items-center gap-3">
-                    <div id="bottom-avatar" class="w-10 h-10 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow">
+            <div id="bottom-player-bar" class="w-full max-w-[calc(min(86vw,540px)+18px)] lg:max-w-[calc(min(72vh,576px)+18px)] glass-panel rounded-2xl px-4 py-2.5 flex items-center justify-between gap-2 transition-all">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div id="bottom-avatar" class="w-10 h-10 shrink-0 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow">
                         K
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <button onclick="handlePlayerBarNameClick('bottom')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-white hover:text-sky-300 transition text-left">
-                                <span id="bottom-player-name">Kỳ Thủ (Bạn)</span>
-                                <svg id="bottom-edit-icon" class="w-3.5 h-3.5 text-slate-400 group-hover:text-sky-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <button onclick="handlePlayerBarNameClick('bottom')" title="Nhấn để đổi tên" class="group flex items-center gap-1.5 font-bold text-sm text-white hover:text-sky-300 transition text-left truncate">
+                                <span id="bottom-player-name" class="truncate">Kỳ Thủ (Bạn)</span>
+                                <svg id="bottom-edit-icon" class="w-3.5 h-3.5 shrink-0 text-slate-400 group-hover:text-sky-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                 </svg>
                             </button>
@@ -405,7 +382,13 @@
                         <div id="bottom-captured" class="flex items-center flex-wrap gap-0.5 min-h-[20px] text-sm text-slate-200 mt-0.5"></div>
                     </div>
                 </div>
-                <div id="bottom-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div id="bottom-advantage" class="font-mono text-xs font-extrabold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-lg border border-emerald-500/20 hidden"></div>
+                    <!-- Bottom Chess Clock -->
+                    <div id="bottom-clock" class="font-mono text-base sm:text-lg font-extrabold px-3 py-1.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-400 tracking-wider min-w-[78px] text-center transition-all">
+                        05:00
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -414,9 +397,35 @@
             <div class="glass-panel rounded-2xl p-4">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-bold uppercase tracking-wider cosmic-accent-text">Phòng Thi Đấu</span>
-                    <span id="game-mode-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                        Chưa vào phòng
+                    <div class="flex items-center gap-1.5">
+                        <span id="active-time-badge" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30">
+                            ⏱ 5 phút
+                        </span>
+                        <span id="game-mode-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                            Chưa vào phòng
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quick Time Selector -->
+                <div class="mt-2.5 mb-2.5 flex items-center justify-between bg-slate-950/60 border border-slate-800/90 rounded-xl px-3 py-2">
+                    <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Thời gian ván:
                     </span>
+                    <div class="flex items-center gap-1.5" id="sidebar-time-selector">
+                        <button type="button" data-time-min="3" onclick="selectTimeControl(3)" class="time-preset-btn px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            3p
+                        </button>
+                        <button type="button" data-time-min="5" onclick="selectTimeControl(5)" class="time-preset-btn px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            5p
+                        </button>
+                        <button type="button" data-time-min="10" onclick="selectTimeControl(10)" class="time-preset-btn px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            10p
+                        </button>
+                    </div>
                 </div>
 
                 <div id="room-share-box" class="hidden mt-3 space-y-2.5">
@@ -504,14 +513,14 @@
                         Xoay Bàn
                     </button>
 
-                    <button id="btn-offer-draw" onclick="offerDraw()" class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition">
+                    <button id="btn-offer-draw" onclick="offerDraw()" class="py-2.5 px-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none border border-slate-700 text-slate-200 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition">
                         <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Xin Hòa
                     </button>
 
-                    <button id="btn-resign" onclick="confirmResign()" class="py-2.5 px-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 border border-rose-800/60 text-rose-300 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition">
+                    <button id="btn-resign" onclick="confirmResign()" class="py-2.5 px-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 disabled:opacity-40 disabled:pointer-events-none border border-rose-800/60 text-rose-300 text-xs font-semibold flex flex-col items-center justify-center gap-1 transition">
                         <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
                         </svg>
@@ -524,7 +533,7 @@
 
     <!-- Lobby Modal -->
     <div id="lobby-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-sky-500/30 shadow-2xl relative">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 sm:p-7 border border-sky-500/30 shadow-2xl relative max-h-[92vh] overflow-y-auto">
             <button onclick="closeLobbyModal()" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -557,8 +566,26 @@
 
             <div class="space-y-3.5">
                 <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
-                    <h3 class="text-sm font-bold text-white mb-1">1. Tạo Phòng Mới (Quân Trắng)</h3>
-                    <p class="text-xs text-slate-400 mb-3">Tạo mã phòng 6 ký tự và gửi link cho bạn bè vào chơi.</p>
+                    <div class="flex items-center justify-between mb-1">
+                        <h3 class="text-sm font-bold text-white">1. Tạo Phòng Mới (Quân Trắng)</h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">Chọn thời gian ván đấu, tạo mã phòng và gửi link cho bạn bè.</p>
+
+                    <div class="flex items-center justify-between bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 mb-3">
+                        <span class="text-xs font-semibold text-slate-300">Thời gian mỗi bên:</span>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" data-time-min="3" onclick="selectTimeControl(3)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                                3 phút
+                            </button>
+                            <button type="button" data-time-min="5" onclick="selectTimeControl(5)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                                5 phút
+                            </button>
+                            <button type="button" data-time-min="10" onclick="selectTimeControl(10)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                                10 phút
+                            </button>
+                        </div>
+                    </div>
+
                     <button onclick="createOnlineRoom()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-teal-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-sky-500/25 transition">
                         Tạo Phòng & Lấy Link Mời
                     </button>
@@ -636,7 +663,7 @@
                     </svg>
                 </div>
                 <h2 class="text-xl font-extrabold cosmic-shimmer-text">Chơi 2 Người (Chung Thiết Bị)</h2>
-                <p class="text-xs text-slate-400 mt-1">Đặt tên riêng cho 2 kỳ thủ trước khi vào bàn đấu</p>
+                <p class="text-xs text-slate-400 mt-1">Đặt tên & chọn thời gian ván đấu cho 2 kỳ thủ</p>
             </div>
 
             <div class="space-y-4">
@@ -658,6 +685,21 @@
                     <input id="local-p2-input" type="text" maxlength="20" placeholder="Tên Người Chơi 2..."
                         onkeydown="if(event.key==='Enter') confirmLocalSetup()"
                         class="w-full bg-slate-950 border border-slate-700 focus:border-sky-400 focus:outline-none rounded-xl px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500">
+                </div>
+
+                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/90 border border-slate-700">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Thời gian mỗi bên:</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" data-time-min="3" onclick="selectTimeControl(3)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            3p
+                        </button>
+                        <button type="button" data-time-min="5" onclick="selectTimeControl(5)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            5p
+                        </button>
+                        <button type="button" data-time-min="10" onclick="selectTimeControl(10)" class="time-preset-btn px-3 py-1 rounded-lg font-mono text-xs font-bold border transition">
+                            10p
+                        </button>
+                    </div>
                 </div>
 
                 <button onclick="confirmLocalSetup()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-teal-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-sky-500/25 transition">
@@ -687,10 +729,10 @@
                 const count = Math.min(185, Math.floor((width * height) / 7000));
                 stars = Array.from({ length: count }, () => {
                     const palette = [
-                        '226, 232, 240', // Starlight white
-                        '125, 211, 252', // Sky cyan
-                        '110, 231, 183', // Soft emerald aurora
-                        '196, 181, 253'  // Soft violet
+                        '226, 232, 240',
+                        '125, 211, 252',
+                        '110, 231, 183',
+                        '196, 181, 253'
                     ];
                     return {
                         x: Math.random() * width,
@@ -725,7 +767,6 @@
                 ctx.globalCompositeOperation = 'screen';
                 ctx.filter = 'blur(48px)';
 
-                // Gentle elliptical orbit drift around the sky
                 const driftX = Math.cos(t * 0.45) * orbitRx;
                 const driftY = Math.sin(t * 0.38) * orbitRy;
 
@@ -766,11 +807,9 @@
             }
 
             function draw() {
-                // Ultra-chill, slow ambient drift speed
                 time += 0.0022;
                 ctx.clearRect(0, 0, width, height);
 
-                // 1. Slow-orbiting deep cosmic nebula glow
                 const nebulaX = width * 0.5 + Math.cos(time * 0.35) * (width * 0.14);
                 const nebulaY = height * 0.34 + Math.sin(time * 0.28) * (height * 0.09);
                 const nebula = ctx.createRadialGradient(
@@ -788,8 +827,6 @@
                 ctx.fillStyle = nebula;
                 ctx.fillRect(0, 0, width, height);
 
-                // 2. Three layered chill Aurora ribbons drifting slowly around the sky
-                // Upper Emerald-Cyan Curtain
                 drawAuroraRibbon(
                     time,
                     height * 0.18,
@@ -806,7 +843,6 @@
                     ]
                 );
 
-                // Mid Sky-Blue & Teal Flowing Wave
                 drawAuroraRibbon(
                     time * 0.82 + 2.1,
                     height * 0.42,
@@ -823,7 +859,6 @@
                     ]
                 );
 
-                // Lower Horizon Soft Violet-Cyan Veil
                 drawAuroraRibbon(
                     time * 0.68 + 4.2,
                     height * 0.68,
@@ -839,7 +874,6 @@
                     ]
                 );
 
-                // 3. Gentle Twinkling Stars
                 for (const s of stars) {
                     s.alpha += s.speed;
                     if (s.alpha > 0.92 || s.alpha < 0.15) s.speed = -s.speed;
@@ -849,7 +883,6 @@
                     ctx.fill();
                 }
 
-                // 4. Occasional Gentle Shooting Stars
                 if (shootingStars.length < 2 && Math.random() < 0.0035) {
                     spawnShootingStar();
                 }
@@ -910,7 +943,6 @@
         function ensureAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                // Subtle warm room reverb using feedback delay network
                 const delay = audioCtx.createDelay();
                 delay.delayTime.value = 0.042;
                 const feedback = audioCtx.createGain();
@@ -941,9 +973,7 @@
             return buffer;
         }
 
-        // Synthesize realistic wooden chess piece placement at a specific start time
         function playWoodPlacement(startTime, { pitchStart = 148, pitchEnd = 64, bodyGainVal = 0.32, tapFreq = 920, tapGainVal = 0.16, duration = 0.085 } = {}) {
-            // 1. Warm wooden board resonance (low-mid sine/triangle body)
             const bodyOsc = audioCtx.createOscillator();
             const bodyGain = audioCtx.createGain();
             bodyOsc.type = 'sine';
@@ -960,7 +990,6 @@
             bodyOsc.start(startTime);
             bodyOsc.stop(startTime + duration + 0.01);
 
-            // 2. Crisp short wooden contact transient (bandpass filtered noise burst)
             const tapNoise = audioCtx.createBufferSource();
             tapNoise.buffer = createNoiseBuffer(0.032);
             const tapFilter = audioCtx.createBiquadFilter();
@@ -980,7 +1009,6 @@
             tapNoise.stop(startTime + 0.032);
         }
 
-        // Synthesize a warm celesta/harp note with soft harmonic overtone
         function playCelestaNote(startTime, freq, peakGain = 0.15, decay = 0.65) {
             const osc = audioCtx.createOscillator();
             const overtone = audioCtx.createOscillator();
@@ -1020,7 +1048,6 @@
                 const now = audioCtx.currentTime;
 
                 if (type === 'move') {
-                    // Natural warm wooden piece placement (~140Hz resonant body + soft wood tap)
                     playWoodPlacement(now, {
                         pitchStart: 142,
                         pitchEnd: 62,
@@ -1029,9 +1056,7 @@
                         tapGainVal: 0.15,
                         duration: 0.082
                     });
-
                 } else if (type === 'capture') {
-                    // Crisp 2-beat capture: piece knock/sweep at 0ms + firm decisive thud at +36ms
                     playWoodPlacement(now, {
                         pitchStart: 210,
                         pitchEnd: 95,
@@ -1048,9 +1073,7 @@
                         tapGainVal: 0.26,
                         duration: 0.105
                     });
-
                 } else if (type === 'castle') {
-                    // Two consecutive wooden placements ~95ms apart (King first, Rook slides & lands)
                     playWoodPlacement(now, {
                         pitchStart: 144,
                         pitchEnd: 64,
@@ -1067,9 +1090,7 @@
                         tapGainVal: 0.17,
                         duration: 0.085
                     });
-
                 } else if (type === 'promote') {
-                    // Wooden placement + ascending crystal shimmer chime (E5 -> G#5 -> B5 -> E6)
                     playWoodPlacement(now, {
                         pitchStart: 155,
                         pitchEnd: 66,
@@ -1082,21 +1103,17 @@
                     shimmerNotes.forEach((freq, i) => {
                         playCelestaNote(now + 0.03 + i * 0.055, freq, 0.11, 0.52);
                     });
-
                 } else if (type === 'check') {
-                    // Gentle, crystalline two-note glass/celesta alert (A5 -> E6), never harsh
                     playCelestaNote(now, 880.0, 0.13, 0.48);
                     playCelestaNote(now + 0.095, 1318.51, 0.14, 0.62);
-
+                } else if (type === 'tick') {
+                    playCelestaNote(now, 783.99, 0.06, 0.14);
                 } else if (type === 'checkmate' || type === 'gameover') {
-                    // Deep, ceremonial cosmic harp/bell arpeggio (C5 - E5 - G5 - B5 - D6 - E6)
                     const grandChord = [523.25, 659.25, 783.99, 987.77, 1174.66, 1318.51];
                     grandChord.forEach((freq, idx) => {
                         playCelestaNote(now + idx * 0.09, freq, 0.145, 1.15);
                     });
-
                 } else if (type === 'draw') {
-                    // Calm, balanced two-note resolving chord (F5 -> C6)
                     playCelestaNote(now, 698.46, 0.12, 0.65);
                     playCelestaNote(now + 0.11, 1046.50, 0.12, 0.80);
                 }
@@ -1135,6 +1152,7 @@
         const STORAGE_NAME_KEY = 'cosmic_chess_player_name_v1';
         const STORAGE_LOCAL_P1_KEY = 'cosmic_chess_local_p1_v1';
         const STORAGE_LOCAL_P2_KEY = 'cosmic_chess_local_p2_v1';
+        const STORAGE_TIME_KEY = 'cosmic_chess_time_min_v1';
 
         let myName = localStorage.getItem(STORAGE_NAME_KEY) || 'Kỳ Thủ';
         let opponentName = 'Đối Thủ';
@@ -1202,6 +1220,7 @@
             closeLobbyModal();
             document.getElementById('local-p1-input').value = localPlayer1Name || myName || 'Người Chơi 1';
             document.getElementById('local-p2-input').value = localPlayer2Name || 'Người Chơi 2';
+            updateTimePresetButtonsUI();
             document.getElementById('local-setup-modal').classList.remove('hidden');
             setTimeout(() => document.getElementById('local-p1-input').focus(), 60);
         }
@@ -1224,7 +1243,7 @@
 
             if (gameMode === 'local') {
                 updatePlayerBars();
-                showToast(`Đã cập nhật tên: ${localPlayer1Name} vs ${localPlayer2Name}`, 'success');
+                showToast(`Đã cập nhật: ${localPlayer1Name} vs ${localPlayer2Name}`, 'success');
             } else {
                 startLocalGame();
             }
@@ -1263,7 +1282,7 @@
         }
 
         /*************************************************************************
-         * 5. CHESS STATE & MULTIPLAYER ENGINE
+         * 5. CHESS STATE, CHESS CLOCK & MULTIPLAYER ENGINE
          *************************************************************************/
         const chess = new Chess();
         let gameMode = 'idle';
@@ -1274,7 +1293,23 @@
         let lastMove = null;
         let pendingPromotion = null;
         let isGameOver = false;
-        let replayIndex = null; // null = live position, 0..N = viewing move index
+        let replayIndex = null;
+
+        // Pending action flags to prevent duplicate interactive toasts
+        let pendingDrawOffer = false;
+        let pendingRematchOffer = false;
+
+        // Chess Clock State (Default 5 minutes)
+        const VALID_TIME_MINUTES = [3, 5, 10];
+        const savedTimeMin = parseInt(localStorage.getItem(STORAGE_TIME_KEY), 10);
+        let selectedTimeMinutes = VALID_TIME_MINUTES.includes(savedTimeMin) ? savedTimeMin : 5;
+        let timeLeftMs = {
+            w: selectedTimeMinutes * 60 * 1000,
+            b: selectedTimeMinutes * 60 * 1000
+        };
+        let clockInterval = null;
+        let lastClockTickTime = null;
+        let lastLowTimeSecond = { w: null, b: null };
 
         let peer = null;
         let conn = null;
@@ -1282,7 +1317,7 @@
         let heartbeatTimer = null;
         let reconnectTimer = null;
         let lastPongTime = 0;
-        const PEER_PREFIX = 'htm-cosmic-royal-v2-';
+        const PEER_PREFIX = 'htm-cosmic-royal-v3-';
 
         const PEER_CONFIG = {
             debug: 1,
@@ -1299,6 +1334,213 @@
         const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
+        /*************************************************************************
+         * CHESS CLOCK FUNCTIONS
+         *************************************************************************/
+        function formatClockMs(ms) {
+            const safeMs = Math.max(0, ms);
+            const totalSeconds = Math.ceil(safeMs / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function isClockRunningCondition() {
+            if (isGameOver || chess.game_over()) return false;
+            if (gameMode === 'local') {
+                return chess.history().length > 0;
+            }
+            if (gameMode === 'online') {
+                return Boolean(conn && conn.open && chess.history().length > 0);
+            }
+            return false;
+        }
+
+        function startChessClockLoop() {
+            if (clockInterval) return;
+            lastClockTickTime = performance.now();
+            clockInterval = setInterval(tickChessClock, 100);
+        }
+
+        function stopChessClockLoop() {
+            if (clockInterval) {
+                clearInterval(clockInterval);
+                clockInterval = null;
+            }
+            lastClockTickTime = null;
+        }
+
+        function resetClocksToSelected() {
+            stopChessClockLoop();
+            const initialMs = selectedTimeMinutes * 60 * 1000;
+            timeLeftMs = { w: initialMs, b: initialMs };
+            lastLowTimeSecond = { w: null, b: null };
+            updateClockUI();
+        }
+
+        function tickChessClock() {
+            const now = performance.now();
+            if (!lastClockTickTime) {
+                lastClockTickTime = now;
+                return;
+            }
+            const delta = now - lastClockTickTime;
+            lastClockTickTime = now;
+
+            if (!isClockRunningCondition()) {
+                updateClockUI();
+                return;
+            }
+
+            const activeTurn = chess.turn();
+            timeLeftMs[activeTurn] = Math.max(0, timeLeftMs[activeTurn] - delta);
+
+            // Subtle warning tick when under 10 seconds
+            const secLeft = Math.ceil(timeLeftMs[activeTurn] / 1000);
+            if (secLeft > 0 && secLeft <= 10 && lastLowTimeSecond[activeTurn] !== secLeft) {
+                lastLowTimeSecond[activeTurn] = secLeft;
+                if (gameMode === 'local' || (gameMode === 'online' && activeTurn === myColor)) {
+                    playSound('tick');
+                }
+            }
+
+            updateClockUI();
+
+            if (timeLeftMs[activeTurn] <= 0) {
+                handleFlagFall(activeTurn);
+            }
+        }
+
+        function handleFlagFall(loserColor) {
+            if (isGameOver) return;
+            stopChessClockLoop();
+            timeLeftMs[loserColor] = 0;
+            updateClockUI();
+
+            const winnerColor = loserColor === 'w' ? 'b' : 'w';
+            let title = 'Hết Giờ!';
+            let subtitle = winnerColor === 'w' ? 'Quân Đen hết thời gian • Quân Trắng thắng!' : 'Quân Trắng hết thời gian • Quân Đen thắng!';
+
+            if (gameMode === 'online') {
+                sendNetwork({
+                    type: 'timeout',
+                    loserColor,
+                    timeLeftMs
+                });
+                if (loserColor === myColor) {
+                    subtitle = `Bạn đã hết thời gian! ${opponentName} giành chiến thắng.`;
+                } else {
+                    subtitle = `${opponentName} đã hết thời gian! Bạn giành chiến thắng.`;
+                }
+            } else if (gameMode === 'local') {
+                const loserName = loserColor === 'w' ? localPlayer1Name : localPlayer2Name;
+                const winnerName = winnerColor === 'w' ? localPlayer1Name : localPlayer2Name;
+                subtitle = `${loserName} hết giờ • Chúc mừng ${winnerName}!`;
+            }
+
+            endGame(title, subtitle, '⏰', false);
+        }
+
+        function updateClockUI() {
+            const topColor = boardFlipped ? 'w' : 'b';
+            const bottomColor = boardFlipped ? 'b' : 'w';
+            const topClockEl = document.getElementById('top-clock');
+            const bottomClockEl = document.getElementById('bottom-clock');
+
+            topClockEl.textContent = formatClockMs(timeLeftMs[topColor]);
+            bottomClockEl.textContent = formatClockMs(timeLeftMs[bottomColor]);
+
+            const running = isClockRunningCondition();
+            const currentTurn = chess.turn();
+
+            applyClockStyle(topClockEl, timeLeftMs[topColor], running && currentTurn === topColor);
+            applyClockStyle(bottomClockEl, timeLeftMs[bottomColor], running && currentTurn === bottomColor);
+        }
+
+        function applyClockStyle(el, remainingMs, isRunningTurn) {
+            const isLow = remainingMs <= 15000 && remainingMs > 0;
+            const isExpired = remainingMs <= 0;
+
+            let cls = 'font-mono text-base sm:text-lg font-extrabold px-3 py-1.5 rounded-xl border tracking-wider min-w-[78px] text-center transition-all ';
+
+            if (isExpired) {
+                cls += 'bg-rose-950/90 border-rose-500 text-rose-300';
+            } else if (isRunningTurn && isLow) {
+                cls += 'bg-rose-950/90 border-rose-400 text-rose-200 clock-low-time';
+            } else if (isRunningTurn) {
+                cls += 'bg-sky-950/90 border-sky-400/80 text-sky-200 shadow-[0_0_14px_rgba(56,189,248,0.28)]';
+            } else if (isLow) {
+                cls += 'bg-rose-950/60 border-rose-700/60 text-rose-300';
+            } else {
+                cls += 'bg-slate-950/85 border-slate-700/80 text-slate-400';
+            }
+
+            el.className = cls;
+        }
+
+        function updateTimePresetButtonsUI() {
+            const badge = document.getElementById('active-time-badge');
+            if (badge) badge.textContent = `⏱ ${selectedTimeMinutes} phút`;
+
+            const buttons = document.querySelectorAll('.time-preset-btn');
+            buttons.forEach(btn => {
+                const min = parseInt(btn.dataset.timeMin, 10);
+                const isSelected = min === selectedTimeMinutes;
+                if (isSelected) {
+                    btn.className = 'time-preset-btn px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition bg-gradient-to-r from-sky-500/30 to-teal-500/30 border-sky-400 text-sky-200 shadow-[0_0_10px_rgba(56,189,248,0.22)]';
+                } else {
+                    btn.className = 'time-preset-btn px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200';
+                }
+            });
+        }
+
+        function selectTimeControl(minutes, fromNetwork = false) {
+            if (!VALID_TIME_MINUTES.includes(minutes)) return;
+
+            if (!fromNetwork && gameMode === 'online' && myColor !== 'w') {
+                showToast('Chỉ chủ phòng (Quân Trắng) mới có thể đổi thời gian ván đấu.', 'info');
+                return;
+            }
+
+            const hasMovesStarted = chess.history().length > 0 && !isGameOver;
+            if (!fromNetwork && hasMovesStarted) {
+                showInteractiveToast(
+                    `Đổi sang ${minutes} phút sẽ bắt đầu lại ván cờ mới. Tiếp tục chứ?`,
+                    'Đổi & Chơi Mới',
+                    () => applyTimeChangeAndReset(minutes, true),
+                    'Giữ Ván Hiện Tại',
+                    null
+                );
+                return;
+            }
+
+            applyTimeChangeAndReset(minutes, !fromNetwork);
+        }
+
+        function applyTimeChangeAndReset(minutes, broadcast) {
+            selectedTimeMinutes = minutes;
+            localStorage.setItem(STORAGE_TIME_KEY, String(minutes));
+            updateTimePresetButtonsUI();
+
+            if (gameMode === 'idle') {
+                resetClocksToSelected();
+                showToast(`Đã chọn thời gian thi đấu: ${minutes} phút / bên`, 'info');
+                return;
+            }
+
+            resetBoardState();
+            if (broadcast && gameMode === 'online' && conn && conn.open) {
+                sendNetwork({
+                    type: 'time_control',
+                    minutes: selectedTimeMinutes
+                });
+            }
+            showToast(`Đã đặt thời gian ván đấu: ${minutes} phút mỗi bên`, 'success');
+        }
+
+        /*************************************************************************
+         * REPLAY & HISTORY HELPERS
+         *************************************************************************/
         function getFullHistory() {
             return chess.history({ verbose: true });
         }
@@ -1371,6 +1613,19 @@
             }
         }
 
+        function updateActionButtonsState() {
+            const drawBtn = document.getElementById('btn-offer-draw');
+            const resignBtn = document.getElementById('btn-resign');
+            const isActiveMatch = (gameMode === 'local') || (gameMode === 'online' && conn && conn.open);
+            const disabled = !isActiveMatch || isGameOver;
+
+            if (drawBtn) drawBtn.disabled = disabled || pendingDrawOffer;
+            if (resignBtn) resignBtn.disabled = disabled;
+        }
+
+        /*************************************************************************
+         * P2P MULTIPLAYER & SYNC
+         *************************************************************************/
         function generateRoomCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
@@ -1477,8 +1732,9 @@
 
             peer.on('open', () => {
                 setConnectionStatus('waiting', `Phòng ${roomCode} • Chờ đối thủ`);
-                showToast(`Đã tạo phòng ${roomCode}! Hãy gửi link cho đối thủ.`, 'success');
+                showToast(`Đã tạo phòng ${roomCode} (${selectedTimeMinutes}p)! Gửi link cho đối thủ.`, 'success');
                 updatePlayerBars();
+                updateActionButtonsState();
             });
 
             peer.on('connection', (incomingConn) => {
@@ -1572,6 +1828,18 @@
             }
         }
 
+        function buildSyncPayload() {
+            return {
+                type: 'sync',
+                fen: chess.fen(),
+                pgn: chess.pgn(),
+                hostName: myColor === 'w' ? myName : opponentName,
+                timeMinutes: selectedTimeMinutes,
+                timeLeftMs: { ...timeLeftMs },
+                isGameOver
+            };
+        }
+
         function setupConnectionHandlers() {
             conn.on('open', () => {
                 lastPongTime = Date.now();
@@ -1582,17 +1850,13 @@
                 conn.send({ type: 'profile', name: myName });
 
                 if (myColor === 'w') {
-                    conn.send({
-                        type: 'sync',
-                        fen: chess.fen(),
-                        history: chess.history({ verbose: true }),
-                        hostName: myName
-                    });
+                    conn.send(buildSyncPayload());
                 } else {
                     conn.send({ type: 'request_sync' });
                 }
 
                 updatePlayerBars();
+                updateActionButtonsState();
                 renderBoard();
             });
 
@@ -1621,32 +1885,56 @@
                         break;
 
                     case 'request_sync':
-                        sendNetwork({
-                            type: 'sync',
-                            fen: chess.fen(),
-                            history: chess.history({ verbose: true }),
-                            hostName: myName
-                        });
+                        sendNetwork(buildSyncPayload());
                         break;
 
                     case 'full':
                         showToast('Phòng này đã đủ 2 người chơi!', 'error');
                         cleanupPeer();
                         setConnectionStatus('error', 'Phòng đã đầy');
+                        updateActionButtonsState();
+                        break;
+
+                    case 'time_control':
+                        if (VALID_TIME_MINUTES.includes(data.minutes)) {
+                            applyTimeChangeAndReset(data.minutes, false);
+                        }
                         break;
 
                     case 'move':
-                        applyMoveFromNetwork(data.move, data.fen);
+                        applyMoveFromNetwork(data.move, data.pgn, data.fen, data.timeLeftMs);
+                        break;
+
+                    case 'timeout':
+                        if (data.timeLeftMs) {
+                            timeLeftMs = { ...data.timeLeftMs };
+                        }
+                        if (data.loserColor && !isGameOver) {
+                            handleFlagFall(data.loserColor);
+                        }
                         break;
 
                     case 'sync':
-                        if (data.hostName) opponentName = data.hostName;
-                        if (data.fen && data.fen !== chess.fen()) {
-                            chess.load(data.fen);
-                            if (data.history && data.history.length > 0) {
-                                const last = data.history[data.history.length - 1];
-                                lastMove = { from: last.from, to: last.to };
+                        if (data.hostName && myColor === 'b') opponentName = data.hostName;
+                        if (VALID_TIME_MINUTES.includes(data.timeMinutes)) {
+                            selectedTimeMinutes = data.timeMinutes;
+                            updateTimePresetButtonsUI();
+                        }
+                        if (data.timeLeftMs) {
+                            timeLeftMs = { ...data.timeLeftMs };
+                            updateClockUI();
+                        }
+                        if (data.pgn) {
+                            chess.load_pgn(data.pgn);
+                            const hist = chess.history({ verbose: true });
+                            lastMove = hist.length > 0 ? { from: hist[hist.length - 1].from, to: hist[hist.length - 1].to } : null;
+                            replayIndex = null;
+                            if (chess.history().length > 0 && !isGameOver) {
+                                startChessClockLoop();
                             }
+                            renderAll();
+                        } else if (data.fen && data.fen !== chess.fen()) {
+                            chess.load(data.fen);
                             replayIndex = null;
                             renderAll();
                         } else {
@@ -1672,16 +1960,20 @@
                         break;
 
                     case 'draw_accept':
+                        pendingDrawOffer = false;
+                        updateActionButtonsState();
                         endGame('Hòa Cờ!', `${opponentName} đã chấp nhận lời xin hòa`, '🤝', true);
                         break;
 
                     case 'draw_decline':
+                        pendingDrawOffer = false;
+                        updateActionButtonsState();
                         showToast(`${opponentName} đã từ chối lời xin hòa.`, 'info');
                         break;
 
                     case 'rematch_request':
                         showInteractiveToast(
-                            `${opponentName} mời bạn đấu ván mới (đổi màu quân)!`,
+                            `${opponentName} mời bạn đấu ván mới (${selectedTimeMinutes}p • đổi màu quân)!`,
                             'Chấp Nhận',
                             () => {
                                 myColor = myColor === 'w' ? 'b' : 'w';
@@ -1691,21 +1983,31 @@
                                 showToast('Ván mới đã bắt đầu!', 'success');
                             },
                             'Để Sau',
-                            null
+                            () => sendNetwork({ type: 'rematch_decline' })
                         );
                         break;
 
                     case 'rematch_accept':
+                        pendingRematchOffer = false;
                         myColor = myColor === 'w' ? 'b' : 'w';
                         boardFlipped = (myColor === 'b');
                         resetBoardState();
                         showToast(`${opponentName} đồng ý tái đấu! Ván mới bắt đầu.`, 'success');
+                        break;
+
+                    case 'rematch_decline':
+                        pendingRematchOffer = false;
+                        showToast(`${opponentName} chưa sẵn sàng tái đấu.`, 'info');
                         break;
                 }
             });
 
             conn.on('close', () => {
                 stopHeartbeat();
+                stopChessClockLoop();
+                pendingDrawOffer = false;
+                pendingRematchOffer = false;
+                updateActionButtonsState();
                 setConnectionStatus('waiting', 'Đối thủ mất kết nối...');
                 showToast(`${opponentName} tạm mất kết nối. Đang chờ kết nối lại...`, 'error');
                 if (myColor === 'b') {
@@ -1747,7 +2049,7 @@
             url.searchParams.delete('room');
             window.history.replaceState({}, '', url);
 
-            showToast(`${localPlayer1Name} (Trắng) vs ${localPlayer2Name} (Đen)!`, 'success');
+            showToast(`${localPlayer1Name} (Trắng) vs ${localPlayer2Name} (Đen) • ${selectedTimeMinutes}p!`, 'success');
         }
 
         /*************************************************************************
@@ -1761,8 +2063,14 @@
             pendingPromotion = null;
             isGameOver = false;
             replayIndex = null;
+            pendingDrawOffer = false;
+            pendingRematchOffer = false;
+
             document.getElementById('promotion-modal').classList.add('hidden');
             document.getElementById('gameover-overlay').classList.add('hidden');
+
+            resetClocksToSelected();
+            updateActionButtonsState();
             renderAll();
         }
 
@@ -1771,7 +2079,9 @@
             renderMoveHistory();
             renderCapturedAndAdvantage();
             updatePlayerBars();
+            updateClockUI();
             updateReplayControls();
+            updateActionButtonsState();
             checkGameEndConditions();
         }
 
@@ -1928,23 +2238,48 @@
             lastMove = { from: moveResult.from, to: moveResult.to };
             replayIndex = null;
 
+            // Start clock immediately once the first move is made
+            if (!isGameOver && !chess.game_over()) {
+                startChessClockLoop();
+            }
+
             triggerMoveAudio(moveResult);
             renderAll();
 
             if (gameMode === 'online') {
-                sendNetwork({ type: 'move', move: moveObj, fen: chess.fen() });
+                sendNetwork({
+                    type: 'move',
+                    move: moveObj,
+                    fen: chess.fen(),
+                    pgn: chess.pgn(),
+                    timeLeftMs: { ...timeLeftMs }
+                });
             }
         }
 
-        function applyMoveFromNetwork(moveObj, remoteFen) {
+        function applyMoveFromNetwork(moveObj, remotePgn, remoteFen, remoteTimeLeftMs) {
             const moveResult = chess.move(moveObj);
-            if (!moveResult && remoteFen) {
-                chess.load(remoteFen);
+            if (!moveResult) {
+                // Preserve full move history via PGN before falling back to FEN
+                if (remotePgn) {
+                    chess.load_pgn(remotePgn);
+                } else if (remoteFen) {
+                    chess.load(remoteFen);
+                }
             }
+
+            if (remoteTimeLeftMs) {
+                timeLeftMs = { ...remoteTimeLeftMs };
+            }
+
             selectedSquare = null;
             legalMovesForSelected = [];
             lastMove = { from: moveObj.from, to: moveObj.to };
             replayIndex = null;
+
+            if (!isGameOver && !chess.game_over()) {
+                startChessClockLoop();
+            }
 
             if (moveResult) triggerMoveAudio(moveResult);
             renderAll();
@@ -1996,15 +2331,19 @@
         }
 
         function endGame(title, subtitle, icon, isDraw = false) {
+            stopChessClockLoop();
             if (!isGameOver) {
                 playSound(isDraw ? 'draw' : 'checkmate');
             }
             isGameOver = true;
+            pendingDrawOffer = false;
             document.getElementById('gameover-icon').textContent = icon;
             document.getElementById('gameover-title').textContent = title;
             document.getElementById('gameover-subtitle').textContent = subtitle;
             document.getElementById('gameover-overlay').classList.remove('hidden');
+            updateClockUI();
             updateReplayControls();
+            updateActionButtonsState();
         }
 
         function hideGameOverOverlay() {
@@ -2072,13 +2411,13 @@
 
             topAvatar.textContent = getInitialLetter(topDisplayName);
             topAvatar.className = topColor === 'w'
-                ? 'w-10 h-10 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
-                : 'w-10 h-10 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner';
+                ? 'w-10 h-10 shrink-0 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
+                : 'w-10 h-10 shrink-0 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner';
 
             bottomAvatar.textContent = getInitialLetter(bottomDisplayName);
             bottomAvatar.className = bottomColor === 'w'
-                ? 'w-10 h-10 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
-                : 'w-10 h-10 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner';
+                ? 'w-10 h-10 shrink-0 rounded-xl bg-slate-100 border border-white flex items-center justify-center font-extrabold text-sm text-slate-900 shadow'
+                : 'w-10 h-10 shrink-0 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center font-extrabold text-sm text-sky-300 shadow-inner';
 
             const topTurnTag = document.getElementById('top-turn-tag');
             const bottomTurnTag = document.getElementById('bottom-turn-tag');
@@ -2232,21 +2571,36 @@
             renderBoard();
             renderCapturedAndAdvantage();
             updatePlayerBars();
+            updateClockUI();
         }
 
         function offerDraw() {
-            if (isGameOver) return;
+            if (isGameOver || gameMode === 'idle') return;
+            if (pendingDrawOffer) {
+                showToast('Bạn đã gửi lời xin hòa, vui lòng chờ phản hồi...', 'info');
+                return;
+            }
             if (gameMode === 'local') {
+                pendingDrawOffer = true;
+                updateActionButtonsState();
                 showInteractiveToast(
                     'Xác nhận hòa ván đấu này?',
                     'Đồng Ý Hòa',
-                    () => endGame('Hòa Cờ!', 'Hai người chơi đã đồng ý hòa', '🤝', true),
+                    () => {
+                        pendingDrawOffer = false;
+                        endGame('Hòa Cờ!', 'Hai người chơi đã đồng ý hòa', '🤝', true);
+                    },
                     'Hủy',
-                    null
+                    () => {
+                        pendingDrawOffer = false;
+                        updateActionButtonsState();
+                    }
                 );
                 return;
             }
             if (gameMode === 'online' && conn && conn.open) {
+                pendingDrawOffer = true;
+                updateActionButtonsState();
                 sendNetwork({ type: 'draw_offer' });
                 showToast(`Đã gửi lời xin hòa tới ${opponentName}.`, 'info');
             } else {
@@ -2255,7 +2609,7 @@
         }
 
         function confirmResign() {
-            if (isGameOver) return;
+            if (isGameOver || gameMode === 'idle') return;
             showInteractiveToast(
                 'Bạn có chắc chắn muốn đầu hàng ván này?',
                 'Đầu Hàng',
@@ -2266,10 +2620,6 @@
                     } else if (gameMode === 'local') {
                         const loser = chess.turn() === 'w' ? localPlayer1Name : localPlayer2Name;
                         const winner = chess.turn() === 'w' ? localPlayer2Name : localPlayer1Name;
-                        endGame(`${loser} Đầu Hàng`, `${winner} giành chiến thắng`, '🏳️', false);
-                    } else {
-                        const loser = chess.turn() === 'w' ? 'Quân Trắng' : 'Quân Đen';
-                        const winner = chess.turn() === 'w' ? 'Quân Đen' : 'Quân Trắng';
                         endGame(`${loser} Đầu Hàng`, `${winner} giành chiến thắng`, '🏳️', false);
                     }
                 },
@@ -2286,10 +2636,15 @@
             if (gameMode === 'local') {
                 boardFlipped = !boardFlipped;
                 resetBoardState();
-                showToast('Bắt đầu ván mới!', 'success');
+                showToast(`Bắt đầu ván mới (${selectedTimeMinutes}p)!`, 'success');
                 return;
             }
             if (gameMode === 'online' && conn && conn.open) {
+                if (pendingRematchOffer) {
+                    showToast('Đã gửi lời mời tái đấu, đang chờ đối thủ...', 'info');
+                    return;
+                }
+                pendingRematchOffer = true;
                 sendNetwork({ type: 'rematch_request' });
                 showToast(`Đã gửi lời mời tái đấu tới ${opponentName}...`, 'info');
             } else {
@@ -2299,6 +2654,7 @@
 
         function openLobbyModal() {
             document.getElementById('input-player-name').value = myName;
+            updateTimePresetButtonsUI();
             document.getElementById('lobby-modal').classList.remove('hidden');
         }
 
@@ -2382,6 +2738,8 @@
             const savedName = localStorage.getItem(STORAGE_NAME_KEY);
             document.getElementById('input-player-name').value = myName;
             document.getElementById('welcome-name-input').value = savedName || '';
+            updateTimePresetButtonsUI();
+            resetClocksToSelected();
             renderAll();
 
             const params = new URLSearchParams(window.location.search);
